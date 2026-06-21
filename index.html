@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Moving in together — planner</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal: #1D9E75;
+    --teal-dark: #0F6E56;
+    --teal-darker: #085041;
+    --teal-light: #E1F5EE;
+    --teal-mid: #9FE1CB;
+    --purple-light: #EEEDFE;
+    --purple-dark: #3C3489;
+    --coral-light: #FAECE7;
+    --coral-dark: #712B13;
+    --blue-light: #E6F1FB;
+    --blue-dark: #0C447C;
+    --amber-light: #FAEEDA;
+    --amber-dark: #633806;
+    --green-light: #EAF3DE;
+    --green-dark: #27500A;
+    --gray-light: #F1EFE8;
+    --gray-dark: #444441;
+    --red: #A32D2D;
+    --bg: #F7F6F3;
+    --surface: #FFFFFF;
+    --border: rgba(0,0,0,0.1);
+    --border-strong: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --text-muted: #6b6b67;
+    --text-faint: #9b9b96;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-pill: 20px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a18;
+      --surface: #242422;
+      --border: rgba(255,255,255,0.1);
+      --border-strong: rgba(255,255,255,0.18);
+      --text: #f0efe9;
+      --text-muted: #9b9b96;
+      --text-faint: #6b6b67;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .top-bar {
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .logo {
+    width: 32px; height: 32px;
+    background: var(--teal-mid);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .top-bar-title { font-size: 15px; font-weight: 600; flex: 1; }
+  .top-bar-sub { font-size: 12px; color: var(--text-muted); }
+
+  .layout { display: flex; min-height: calc(100vh - 56px); }
+
+  .sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 0.5px solid var(--border);
+    padding: 1.25rem 0.75rem;
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+  }
+  .nav-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); padding: 0 0.5rem; margin-bottom: 6px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-muted);
+    border: none; background: none; width: 100%; text-align: left;
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--teal-light); color: var(--teal-darker); font-weight: 500; }
+  .nav-item svg { flex-shrink: 0; }
+
+  .main { flex: 1; padding: 2rem 1.5rem; max-width: 760px; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .page-title { font-size: 22px; font-weight: 600; margin-bottom: 1.5rem; }
+
+  /* SYNC BAR */
+  .syncbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 1.25rem;
+    font-size: 13px;
+  }
+  .syncbar input {
+    flex: 1; font-size: 12px; padding: 5px 9px;
+    border: 0.5px solid var(--border-strong); border-radius: 6px;
+    background: var(--bg); color: var(--text); min-width: 0;
+    font-family: inherit;
+  }
+  .syncbar input:focus { outline: none; border-color: var(--teal); }
+  .sync-btn {
+    padding: 5px 12px; font-size: 12px; border: 0.5px solid var(--border-strong);
+    border-radius: 6px; background: none; cursor: pointer; color: var(--text);
+    font-family: inherit; white-space: nowrap;
+  }
+  .sync-btn:hover { background: var(--bg); }
+
+  /* PROGRESS */
+  .progarea {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 1.25rem;
+  }
+  .proglabel { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+  .progbar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progfill { height: 100%; background: var(--teal); border-radius: 3px; transition: width 0.4s ease; }
+
+  /* ROOM CARDS */
+  .room-card {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 10px;
+  }
+  .room-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; cursor: pointer; user-select: none;
+  }
+  .room-header:hover { background: var(--bg); }
+  .room-header-left { display: flex; align-items: center; gap: 10px; }
+  .rbadge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: var(--radius-pill); white-space: nowrap; }
+  .rcount { font-size: 12px; color: var(--text-muted); }
+  .chevron { transition: transform 0.2s; color: var(--text-faint); }
+  .chevron.open { transform: rotate(180deg); }
+  .room-body { padding: 0 14px 12px; border-top: 0.5px solid var(--border); }
+
+  .irow { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
+  .irow:last-of-type { border-bottom: none; }
+  .icheck { width: 16px; height: 16px; accent-color: var(--teal); flex-shrink: 0; cursor: pointer; }
+  .itext { flex: 1; font-size: 14px; }
+  .itext.done { text-decoration: line-through; color: var(--text-muted); }
+  .iwho { font-size: 11px; padding: 2px 7px; border-radius: var(--radius-pill); background: var(--bg); color: var(--text-muted); white-space: nowrap; border: 0.5px solid var(--border); }
+  .idel { background: none; border: none; cursor: pointer; color: var(--text-faint); font-size: 18px; padding: 0 2px; line-height: 1; }
+  .idel:hover { color: var(--red); }
+
+  .addrow { display: flex; gap: 8px; padding-top: 10px; }
+  .addrow input, .addrow select {
+    font-size: 13px; padding: 6px 10px;
+    border: 0.5px solid var(--border-strong); border-radius: var(--radius-sm);
+    background: var(--bg); color: var(--text); font-family: inherit;
+  }
+  .addrow input { flex: 1; }
+  .addrow input:focus, .addrow select:focus { outline: none; border-color: var(--teal); }
+  .addrow select { width: 90px; }
+  .add-item-btn {
+    padding: 6px 12px; font-size: 13px; border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius-sm); background: none; cursor: pointer; color: var(--text);
+    font-family: inherit; white-space: nowrap;
+  }
+  .add-item-btn:hover { background: var(--bg); }
+
+  .addroom { display: flex; gap: 8px; margin-top: 4px; }
+  .addroom input {
+    flex: 1; font-size: 13px; padding: 9px 12px;
+    border: 0.5px solid var(--border-strong); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--text); font-family: inherit;
+  }
+  .addroom input:focus { outline: none; border-color: var(--teal); }
+  .addroom button {
+    padding: 9px 16px; font-size: 13px; background: var(--teal); color: white;
+    border: none; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; font-weight: 500;
+  }
+  .addroom button:hover { background: var(--teal-dark); }
+
+  /* TASKS */
+  .tsec { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; }
+  .tsec-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 7px; }
+  .trow { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
+  .trow:last-of-type { border-bottom: none; }
+  .ttag { font-size: 11px; padding: 2px 7px; border-radius: var(--radius-pill); white-space: nowrap; }
+  .ttag.general { background: var(--teal-light); color: var(--teal-darker); }
+  .ttag.urgent { background: var(--coral-light); color: var(--coral-dark); }
+  .ttag.admin { background: var(--purple-light); color: var(--purple-dark); }
+  .tdel { background: none; border: none; cursor: pointer; color: var(--text-faint); font-size: 18px; padding: 0 2px; line-height: 1; }
+  .tdel:hover { color: var(--red); }
+  .addtask { display: flex; gap: 8px; padding-top: 10px; }
+  .addtask input, .addtask select {
+    font-size: 13px; padding: 6px 10px;
+    border: 0.5px solid var(--border-strong); border-radius: var(--radius-sm);
+    background: var(--bg); color: var(--text); font-family: inherit;
+  }
+  .addtask input { flex: 1; }
+  .addtask input:focus, .addtask select:focus { outline: none; border-color: var(--teal); }
+  .addtask select { width: 105px; }
+  .addtask button {
+    padding: 6px 12px; font-size: 13px; border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius-sm); background: none; cursor: pointer; color: var(--text); font-family: inherit;
+  }
+  .addtask button:hover { background: var(--bg); }
+
+  /* SCORER */
+  .sinfo { background: var(--teal-light); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13px; color: var(--teal-darker); margin-bottom: 1.25rem; display: flex; gap: 10px; align-items: flex-start; }
+  .sstep { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; }
+  .sstep-head { font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .step-badge { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: var(--radius-pill); background: var(--teal-light); color: var(--teal-darker); }
+  .sstep p { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.6; }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill { font-size: 12px; padding: 3px 10px; border-radius: var(--radius-pill); }
+  .pill.teal { background: var(--teal-light); color: var(--teal-darker); }
+  .pill.purple { background: var(--purple-light); color: var(--purple-dark); }
+  .sheet-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; font-size: 13px; border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius-sm); background: none; cursor: pointer;
+    color: var(--text); font-family: inherit; text-decoration: none;
+  }
+  .sheet-btn:hover { background: var(--bg); }
+
+  @media (max-width: 600px) {
+    .sidebar { display: none; }
+    .main { padding: 1rem; }
+    .top-bar { padding: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo">🏡</div>
+  <div style="flex:1">
+    <div class="top-bar-title">Moving in together</div>
+  </div>
+  <div class="top-bar-sub" id="top-progress">0 of 0 items</div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-label" style="margin-bottom:8px">Planning</div>
+    <button class="nav-item active" onclick="showTab('shopping',this)">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Shopping list
+    </button>
+    <button class="nav-item" onclick="showTab('tasks',this)">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Tasks
+    </button>
+    <button class="nav-item" onclick="showTab('scorer',this)">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Item scorer
+    </button>
+  </nav>
+
+  <main class="main">
+
+    <!-- SHOPPING LIST -->
+    <div id="panel-shopping" class="panel active">
+      <div class="page-title">Shopping list</div>
+      <div class="syncbar">
+        <svg width="18" height="18" fill="none" stroke="#1D9E75" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+        <input id="sheets-url" type="text" placeholder="Paste your Google Sheets URL to sync…" value="https://docs.google.com/spreadsheets/d/1xfZowYtyVzeiZf3yLwzZvNJh5zHiOPCFKY-yFmZc_zk/edit" />
+        <button class="sync-btn" onclick="alert('Open Extensions → Apps Script in your Google Sheet and paste the sync script from Claude. Then run syncShoppingList().')">How to sync</button>
+      </div>
+      <div class="progarea">
+        <div class="proglabel"><span>Overall progress</span><span id="prog-text">0 of 0 ticked</span></div>
+        <div class="progbar"><div class="progfill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+      <div id="rooms-c"></div>
+      <div class="addroom">
+        <input id="new-room" type="text" placeholder="Add a new room or category…" onkeydown="if(event.key==='Enter')addRoom()" />
+        <button onclick="addRoom()">+ Add room</button>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div id="panel-tasks" class="panel">
+      <div class="page-title">Tasks</div>
+      <div id="tasks-c"></div>
+      <div class="tsec" style="margin-top:4px">
+        <div class="tsec-title">Add a task</div>
+        <div class="addtask">
+          <input id="new-task" type="text" placeholder="New task…" onkeydown="if(event.key==='Enter')addTask()" />
+          <select id="task-tag">
+            <option value="general">General</option>
+            <option value="urgent">Urgent</option>
+            <option value="admin">Admin</option>
+          </select>
+          <select id="task-who">
+            <option>Both</option><option>Me</option><option>Partner</option>
+          </select>
+          <button onclick="addTask()">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCORER -->
+    <div id="panel-scorer" class="panel">
+      <div class="page-title">Item scorer</div>
+      <div class="sinfo">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div>Your item scorer lives in Google Sheets so you and your partner can both fill it in at the same time from any device. Set it up once and reuse it for every purchase decision.</div>
+      </div>
+      <div class="sstep">
+        <div class="sstep-head"><span class="step-badge">Step 1</span> Set up your Google Sheet</div>
+        <p>You need a sheet with columns for: product name, your score (1–10) per criteria, your partner's score, weights (%), and a final weighted average. The formula does the ranking automatically.</p>
+        <a class="sheet-btn" href="https://docs.google.com/spreadsheets/d/1xfZowYtyVzeiZf3yLwzZvNJh5zHiOPCFKY-yFmZc_zk/edit" target="_blank">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Open your Google Sheet
+        </a>
+      </div>
+      <div class="sstep">
+        <div class="sstep-head"><span class="step-badge">Step 2</span> Choose your criteria & weights</div>
+        <p>Decide what matters for each item you're comparing, and give each a weight that adds up to 100%. Both of you score each product 1–10 independently.</p>
+        <div class="pill-row">
+          <span class="pill teal">Suction power</span>
+          <span class="pill teal">Maneuverability</span>
+          <span class="pill teal">Aesthetics</span>
+          <span class="pill teal">Noise level</span>
+          <span class="pill teal">Price</span>
+          <span class="pill teal">Storage size</span>
+          <span class="pill purple">+ add your own</span>
+        </div>
+      </div>
+      <div class="sstep">
+        <div class="sstep-head"><span class="step-badge">Step 3</span> Read the winner</div>
+        <p>The sheet averages your scores, multiplies by the weight, and sums to give each product a final score out of 10. Highest score wins — no debates needed.</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const RCOLS = {
+  'Kitchen':     { bg:'#E1F5EE', tx:'#085041' },
+  'Bathroom':    { bg:'#EEEDFE', tx:'#3C3489' },
+  'Bedroom':     { bg:'#FAECE7', tx:'#712B13' },
+  'Living room': { bg:'#E6F1FB', tx:'#0C447C' },
+  'Office':      { bg:'#FAEEDA', tx:'#633806' },
+  'Hallway':     { bg:'#EAF3DE', tx:'#27500A' },
+};
+function rc(n) { return RCOLS[n] || { bg:'#F1EFE8', tx:'#444441' }; }
+
+const STORAGE_KEY = 'moving-planner-v1';
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+function saveData() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ rooms, tasks })); } catch(e) {}
+}
+
+const defaults = {
+  rooms: [
+    { id:'r1', name:'Kitchen', open:true, items:[
+      { id:'i1', text:'Blender', done:false, who:'Both' },
+      { id:'i2', text:'Toaster', done:false, who:'Me' },
+      { id:'i3', text:'Chopping boards', done:false, who:'Partner' },
+    ]},
+    { id:'r2', name:'Bathroom', open:true, items:[
+      { id:'i4', text:'Bin', done:false, who:'Both' },
+      { id:'i5', text:'Towel hooks', done:false, who:'Me' },
+    ]},
+    { id:'r3', name:'Living room', open:false, items:[
+      { id:'i6', text:'Vacuum cleaner', done:false, who:'Both' },
+      { id:'i7', text:'Rug', done:false, who:'Partner' },
+    ]},
+    { id:'r4', name:'Bedroom', open:false, items:[
+      { id:'i8', text:'Bedside lamps', done:false, who:'Both' },
+    ]},
+  ],
+  tasks: [
+    { id:'t1', text:'Notify change of address', done:false, tag:'admin', who:'Both' },
+    { id:'t2', text:'Set up joint household budget', done:false, tag:'general', who:'Both' },
+    { id:'t3', text:'Book removal van', done:false, tag:'urgent', who:'Me' },
+    { id:'t4', text:'Sort council tax', done:false, tag:'admin', who:'Partner' },
+    { id:'t5', text:'Research internet providers', done:false, tag:'general', who:'Both' },
+  ]
+};
+
+const saved = loadData();
+let rooms = saved ? saved.rooms : defaults.rooms;
+let tasks = saved ? saved.tasks : defaults.tasks;
+let ctr = 200;
+function uid() { return 'x' + (++ctr); }
+
+function renderRooms() {
+  const all = rooms.flatMap(r => r.items);
+  const done = all.filter(i => i.done);
+  const pct = all.length ? Math.round(done.length / all.length * 100) : 0;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-text').textContent = done.length + ' of ' + all.length + ' ticked';
+  document.getElementById('top-progress').textContent = done.length + ' of ' + all.length + ' items';
+
+  document.getElementById('rooms-c').innerHTML = rooms.map(room => {
+    const c = rc(room.name);
+    const dc = room.items.filter(i => i.done).length;
+    return `<div class="room-card">
+  <div class="room-header" onclick="toggleRoom('${room.id}')">
+    <div class="room-header-left">
+      <span class="rbadge" style="background:${c.bg};color:${c.tx}">${room.name}</span>
+      <span class="rcount">${dc}/${room.items.length} done</span>
+    </div>
+    <svg class="chevron${room.open?' open':''}" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  ${room.open ? `<div class="room-body">
+    ${room.items.map(it => `<div class="irow">
+      <input type="checkbox" class="icheck"${it.done?' checked':''} onchange="toggleItem('${room.id}','${it.id}')"/>
+      <span class="itext${it.done?' done':''}">${it.text}</span>
+      <span class="iwho">${it.who}</span>
+      <button class="idel" onclick="delItem('${room.id}','${it.id}')" title="Remove">×</button>
+    </div>`).join('')}
+    <div class="addrow">
+      <input type="text" placeholder="Add item…" id="ni-${room.id}" onkeydown="if(event.key==='Enter')addItem('${room.id}')"/>
+      <select id="nw-${room.id}"><option>Both</option><option>Me</option><option>Partner</option></select>
+      <button class="add-item-btn" onclick="addItem('${room.id}')">+ Add</button>
+    </div>
+  </div>` : ''}
+</div>`;
+  }).join('');
+}
+
+function renderTasks() {
+  const cats = [
+    { k:'urgent', l:'Urgent' },
+    { k:'admin',  l:'Admin' },
+    { k:'general',l:'General' },
+  ];
+  const todo = tasks.filter(t => !t.done);
+  const done = tasks.filter(t => t.done);
+  document.getElementById('tasks-c').innerHTML =
+    cats.map(cat => {
+      const ct = todo.filter(t => t.tag === cat.k);
+      if (!ct.length) return '';
+      return `<div class="tsec">
+  <div class="tsec-title">${cat.l}</div>
+  ${ct.map(t => `<div class="trow">
+    <input type="checkbox" class="icheck" onchange="toggleTask('${t.id}')"/>
+    <span class="itext" style="flex:1;font-size:14px">${t.text}</span>
+    <span class="ttag ${t.tag}">${t.who}</span>
+    <button class="tdel" onclick="delTask('${t.id}')" title="Remove">×</button>
+  </div>`).join('')}
+</div>`;
+    }).join('') +
+    (done.length ? `<div class="tsec">
+  <div class="tsec-title" style="color:var(--text-faint)">Done (${done.length})</div>
+  ${done.map(t => `<div class="trow">
+    <input type="checkbox" class="icheck" checked onchange="toggleTask('${t.id}')"/>
+    <span class="itext done" style="flex:1;font-size:14px">${t.text}</span>
+    <span class="ttag ${t.tag}">${t.who}</span>
+    <button class="tdel" onclick="delTask('${t.id}')" title="Remove">×</button>
+  </div>`).join('')}
+</div>` : '');
+}
+
+function showTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+function toggleRoom(id) {
+  const r = rooms.find(r => r.id === id); if (r) r.open = !r.open;
+  saveData(); renderRooms();
+}
+function toggleItem(rid, iid) {
+  const r = rooms.find(r => r.id === rid);
+  const i = r && r.items.find(i => i.id === iid); if (i) i.done = !i.done;
+  saveData(); renderRooms();
+}
+function delItem(rid, iid) {
+  const r = rooms.find(r => r.id === rid);
+  if (r) r.items = r.items.filter(i => i.id !== iid);
+  saveData(); renderRooms();
+}
+function addItem(rid) {
+  const inp = document.getElementById('ni-' + rid);
+  const who = document.getElementById('nw-' + rid);
+  if (!inp || !inp.value.trim()) return;
+  const r = rooms.find(r => r.id === rid);
+  if (r) r.items.push({ id:uid(), text:inp.value.trim(), done:false, who:who?who.value:'Both' });
+  saveData(); renderRooms();
+}
+function addRoom() {
+  const inp = document.getElementById('new-room');
+  if (!inp.value.trim()) return;
+  rooms.push({ id:uid(), name:inp.value.trim(), open:true, items:[] });
+  inp.value = '';
+  saveData(); renderRooms();
+}
+function toggleTask(id) {
+  const t = tasks.find(t => t.id === id); if (t) t.done = !t.done;
+  saveData(); renderTasks();
+}
+function delTask(id) {
+  tasks = tasks.filter(t => t.id !== id);
+  saveData(); renderTasks();
+}
+function addTask() {
+  const inp = document.getElementById('new-task');
+  const tag = document.getElementById('task-tag');
+  const who = document.getElementById('task-who');
+  if (!inp.value.trim()) return;
+  tasks.push({ id:uid(), text:inp.value.trim(), done:false, tag:tag.value, who:who.value });
+  inp.value = '';
+  saveData(); renderTasks();
+}
+
+renderRooms();
+renderTasks();
+</script>
+</body>
+</html>

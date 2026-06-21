@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Talha & Abdullah — Moving Planner</title>
+<title>Talha and Abdullah Move in Together</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -24,7 +24,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .top-bar{background:var(--warm);padding:0 1.5rem;display:flex;align-items:center;gap:14px;height:58px;position:sticky;top:0;z-index:100}
 .logo-mark{width:34px;height:34px;background:var(--teal);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
 .app-title{font-size:15px;font-weight:600;color:#F5F0E8;flex:1;letter-spacing:0.01em}
-.app-sub{font-size:12px;color:var(--warm3)}
+.sync-indicator{font-size:11px;display:flex;align-items:center;gap:5px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--warm3);flex-shrink:0;transition:background 0.3s}
+.sync-dot.synced{background:#5DCAA5}.sync-dot.syncing{background:var(--amber)}.sync-dot.error{background:var(--coral)}
+.sync-text{color:var(--warm3);font-size:11px}
 .layout{display:flex;min-height:calc(100vh - 58px)}
 .sidebar{width:210px;flex-shrink:0;background:var(--sur);border-right:1px solid var(--bdr);padding:1.25rem 0.75rem;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto}
 .nav-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--txf);padding:0 0.75rem;margin:1rem 0 0.5rem}
@@ -46,54 +49,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-ghost{background:none;border:1px solid var(--bdr2);color:var(--txm)}.btn-ghost:hover{background:var(--sand2);color:var(--tx)}
 .btn-sm{padding:5px 11px;font-size:12px}
 .btn-danger{background:none;border:1px solid var(--bdr2);color:var(--txm);font-family:inherit}.btn-danger:hover{color:var(--coral);border-color:var(--coral)}
-.btn-icon{background:none;border:none;cursor:pointer;color:var(--txf);font-size:18px;line-height:1;padding:0 3px;font-family:inherit}
-.btn-icon:hover{color:var(--coral)}
+.btn-icon{background:none;border:none;cursor:pointer;color:var(--txf);font-size:18px;line-height:1;padding:0 3px;font-family:inherit}.btn-icon:hover{color:var(--coral)}
 input[type=text],input[type=number],input[type=date],input[type=time],input[type=url],select,textarea{font-family:inherit;font-size:14px;padding:8px 11px;border:1px solid var(--bdr2);border-radius:var(--rs);background:var(--sur);color:var(--tx);outline:none;transition:border-color 0.15s}
 input:focus,select:focus,textarea:focus{border-color:var(--teal)}
 input::placeholder{color:var(--txf)}
 .avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-.av-t{background:var(--teal-l);color:var(--teal-d)}.av-a{background:var(--amber-l);color:var(--amber)}
-.av-b{background:var(--sand3);color:var(--txm)}
-.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--txm);background:none;border:1px solid var(--bdr2);border-radius:var(--rs);padding:6px 12px;cursor:pointer;font-family:inherit;margin-bottom:1.25rem}
-.back-btn:hover{background:var(--sand2);color:var(--tx)}
-.chev{transition:transform 0.2s;flex-shrink:0}
-
-/* STATUS BADGES */
-.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:var(--rp);white-space:nowrap}
-.b-need{background:var(--amber-l);color:var(--amber)}
-.b-ordered{background:var(--blue-l);color:var(--blue)}
-.b-have{background:var(--green-l);color:var(--green)}
-.b-not{background:var(--sand3);color:var(--txm)}
-.b-received{background:var(--teal-ll);color:var(--teal-d)}
-.b-liked{background:var(--green-l);color:var(--green)}
-.b-rejected{background:var(--coral-l);color:var(--coral)}
-.b-viewing{background:var(--purple-l);color:var(--purple)}
-
-/* ── SHOPPING ── */
+.av-t{background:var(--teal-l);color:var(--teal-d)}.av-a{background:var(--amber-l);color:var(--amber)}.av-b{background:var(--sand3);color:var(--txm)}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--txm);background:none;border:1px solid var(--bdr2);border-radius:var(--rs);padding:6px 12px;cursor:pointer;font-family:inherit;margin-bottom:1.25rem}.back-btn:hover{background:var(--sand2);color:var(--tx)}
 .cat-tabs-bar{display:flex;align-items:center;gap:2px;margin-bottom:1.25rem;flex-wrap:wrap;border-bottom:1px solid var(--bdr);padding-bottom:0}
-.cat-tab{padding:8px 15px;font-size:13px;font-weight:500;background:none;border:none;cursor:pointer;color:var(--txm);border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;white-space:nowrap;transition:all 0.15s}
-.cat-tab:hover{color:var(--tx)}
-.cat-tab.active{color:var(--teal-d);border-bottom-color:var(--teal);font-weight:600}
-.add-cat-tab{padding:6px 11px;font-size:12px;background:none;border:1px dashed var(--bdr2);border-radius:var(--rs);cursor:pointer;color:var(--txm);font-family:inherit;margin-bottom:4px;white-space:nowrap}
-.add-cat-tab:hover{background:var(--sand2);color:var(--tx)}
-.item-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--bdr);cursor:pointer;transition:background 0.12s}
-.item-row:last-of-type{border-bottom:none}
-.item-row:hover{background:var(--sand)}
-.item-row:hover{margin:0 -1.25rem;padding-left:1.25rem;padding-right:1.25rem}
+.cat-tab{padding:8px 15px;font-size:13px;font-weight:500;background:none;border:none;cursor:pointer;color:var(--txm);border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;white-space:nowrap;transition:all 0.15s}.cat-tab:hover{color:var(--tx)}.cat-tab.active{color:var(--teal-d);border-bottom-color:var(--teal);font-weight:600}
+.add-cat-tab{padding:6px 11px;font-size:12px;background:none;border:1px dashed var(--bdr2);border-radius:var(--rs);cursor:pointer;color:var(--txm);font-family:inherit;margin-bottom:4px;white-space:nowrap}.add-cat-tab:hover{background:var(--sand2);color:var(--tx)}
+.item-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--bdr);cursor:pointer;transition:all 0.12s}.item-row:last-of-type{border-bottom:none}.item-row:hover{background:var(--sand);margin:0 -1.25rem;padding-left:1.25rem;padding-right:1.25rem}
 .item-name-main{flex:1;font-size:14px;font-weight:500}
 .item-winner-tag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--teal-ll);color:var(--teal-d);margin-left:6px}
 .item-status-sel{font-size:12px;padding:4px 8px;border:1px solid var(--bdr2);border-radius:var(--rs);background:var(--sur);color:var(--tx);cursor:pointer;font-family:inherit}
-.add-item-row{display:flex;gap:8px;padding-top:14px;flex-wrap:wrap}
-.add-item-row input{flex:1;min-width:140px}
-.add-item-row select{width:130px}
+.add-item-row{display:flex;gap:8px;padding-top:14px;flex-wrap:wrap}.add-item-row input{flex:1;min-width:140px}.add-item-row select{width:130px}
 .prog-bar-wrap{height:4px;background:var(--bdr);border-radius:2px;margin-bottom:1.25rem;overflow:hidden}
 .prog-bar-fill{height:100%;background:var(--teal);border-radius:2px;transition:width 0.4s}
-
-/* ── ITEM DETAIL PAGE ── */
 .option-card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
 .option-card.winner-card{border:2px solid var(--teal)}
-.option-header{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;transition:background 0.15s;user-select:none}
-.option-header:hover{background:var(--sand)}
+.option-header{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;transition:background 0.15s;user-select:none}.option-header:hover{background:var(--sand)}
 .option-name{flex:1;font-size:14px;font-weight:600}
 .option-score{font-size:20px;font-weight:700;color:var(--teal);min-width:42px;text-align:right}
 .option-score.empty{color:var(--txf);font-size:13px;font-weight:400}
@@ -101,93 +76,84 @@ input::placeholder{color:var(--txf)}
 .score-bar-fill{height:100%;background:var(--teal);border-radius:2px;transition:width 0.4s}
 .win-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--rp);background:var(--teal-ll);color:var(--teal-d)}
 .option-body{padding:14px 16px;border-top:1px solid var(--bdr)}
-.option-link-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.option-link-row input{flex:1;min-width:180px;font-size:13px}
-.link-open{font-size:12px;padding:6px 10px;background:var(--blue-ll);color:var(--blue);border:1px solid var(--blue-l);border-radius:var(--rs);cursor:pointer;font-family:inherit;font-weight:500;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
-.link-open:hover{background:var(--blue-l)}
-.crit-score-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr)}
-.crit-score-row:last-of-type{border-bottom:none}
+.option-link-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}.option-link-row input{flex:1;min-width:180px;font-size:13px}
+.link-open{font-size:12px;padding:6px 10px;background:var(--blue-ll);color:var(--blue);border:1px solid var(--blue-l);border-radius:var(--rs);cursor:pointer;font-family:inherit;font-weight:500;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:4px}.link-open:hover{background:var(--blue-l)}
+.crit-score-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr)}.crit-score-row:last-of-type{border-bottom:none}
 .crit-lbl{flex:1;font-size:13px;color:var(--txm)}
 .score-pair{display:flex;align-items:center;gap:6px}
 .slbl{font-size:10px;color:var(--txf);width:14px;text-align:center}
-.sinp{width:50px;font-size:14px;padding:5px 6px;border:1px solid var(--bdr2);border-radius:7px;background:var(--sand2);color:var(--tx);text-align:center}
-.sinp:focus{border-color:var(--teal);background:var(--sur)}
+.sinp{width:50px;font-size:14px;padding:5px 6px;border:1px solid var(--bdr2);border-radius:7px;background:var(--sand2);color:var(--tx);text-align:center}.sinp:focus{border-color:var(--teal);background:var(--sur)}
 .criteria-editor{background:var(--sand2);border-radius:var(--rs);padding:12px 14px;margin-bottom:1rem}
 .crit-pill{display:inline-flex;align-items:center;gap:5px;background:var(--sur);border:1px solid var(--bdr2);border-radius:7px;padding:4px 9px;font-size:12px;margin:3px}
 .crit-pill input{font-size:12px;border:none;background:transparent;color:var(--tx);outline:none;width:100px}
-
-/* ── BUDGET ── */
 .budget-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:1.5rem}
 .budget-card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);padding:1rem 1.25rem;box-shadow:var(--shadow)}
 .budget-card-label{font-size:12px;color:var(--txm);margin-bottom:4px;font-weight:500}
-.budget-card-value{font-size:26px;font-weight:700;color:var(--warm)}
-.budget-card-value.teal{color:var(--teal)}
+.budget-card-value{font-size:26px;font-weight:700;color:var(--warm)}.budget-card-value.teal{color:var(--teal)}
 .budget-table{width:100%;border-collapse:collapse}
 .budget-table th{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--txf);padding:8px 12px;text-align:left;border-bottom:1px solid var(--bdr)}
-.budget-table td{font-size:13px;padding:10px 12px;border-bottom:1px solid var(--bdr);vertical-align:middle}
-.budget-table tr:last-child td{border-bottom:none}
-.budget-table tr:hover td{background:var(--sand)}
+.budget-table td{font-size:13px;padding:10px 12px;border-bottom:1px solid var(--bdr);vertical-align:middle}.budget-table tr:last-child td{border-bottom:none}.budget-table tr:hover td{background:var(--sand)}
 .budget-cat-header td{background:var(--sand2);font-weight:600;font-size:12px;color:var(--txm);padding:6px 12px}
-
-/* ── ORDER TRACKER ── */
-.order-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--bdr)}
-.order-row:last-of-type{border-bottom:none}
+.order-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--bdr)}.order-row:last-of-type{border-bottom:none}
 .order-name{font-size:14px;font-weight:500;flex:1}
 .order-cat{font-size:11px;color:var(--txm);background:var(--sand2);padding:2px 7px;border-radius:var(--rp)}
 .order-price{font-size:13px;font-weight:600;color:var(--teal);white-space:nowrap}
-.order-link{font-size:12px;padding:4px 9px;background:var(--blue-ll);color:var(--blue);border:1px solid var(--blue-l);border-radius:6px;text-decoration:none;white-space:nowrap}
-.order-link:hover{background:var(--blue-l)}
+.order-link{font-size:12px;padding:4px 9px;background:var(--blue-ll);color:var(--blue);border:1px solid var(--blue-l);border-radius:6px;text-decoration:none;white-space:nowrap}.order-link:hover{background:var(--blue-l)}
 .order-status-sel{font-size:12px;padding:4px 8px;border:1px solid var(--bdr2);border-radius:var(--rs);background:var(--sur);color:var(--tx);cursor:pointer;font-family:inherit}
-
-/* ── HOUSES ── */
 .area-section{margin-bottom:1.5rem}
 .area-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .area-title{font-size:16px;font-weight:700;color:var(--warm);display:flex;align-items:center;gap:8px}
 .area-count{font-size:12px;color:var(--txm);font-weight:400}
 .area-actions{display:flex;gap:6px}
 .prop-card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);margin-bottom:8px;overflow:hidden;box-shadow:var(--shadow)}
-.prop-header{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;transition:background 0.15s;user-select:none}
-.prop-header:hover{background:var(--sand)}
+.prop-header{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;transition:background 0.15s;user-select:none}.prop-header:hover{background:var(--sand)}
 .prop-name{flex:1;font-size:14px;font-weight:600}
 .prop-score-badge{font-size:12px;font-weight:700;padding:3px 9px;border-radius:var(--rp);background:var(--teal-ll);color:var(--teal-d)}
 .prop-body{padding:0 16px 16px;border-top:1px solid var(--bdr)}
-.prop-meta{display:flex;gap:8px;padding:12px 0;flex-wrap:wrap;border-bottom:1px solid var(--bdr)}
-.prop-meta input{flex:1;min-width:120px;font-size:13px}
+.prop-meta{display:flex;gap:8px;padding:12px 0;flex-wrap:wrap;border-bottom:1px solid var(--bdr)}.prop-meta input{flex:1;min-width:120px;font-size:13px}
 .prop-crit-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}
 .prop-crit-item{background:var(--sand2);border-radius:var(--rs);padding:8px 10px}
 .prop-crit-label{font-size:11px;color:var(--txm);margin-bottom:4px;font-weight:500}
 .prop-crit-scores{display:flex;align-items:center;gap:5px}
-.prop-sinp{width:44px;font-size:13px;padding:4px 5px;border:1px solid var(--bdr2);border-radius:6px;background:var(--sur);color:var(--tx);text-align:center}
-.prop-sinp:focus{border-color:var(--teal)}
+.prop-sinp{width:44px;font-size:13px;padding:4px 5px;border:1px solid var(--bdr2);border-radius:6px;background:var(--sur);color:var(--tx);text-align:center}.prop-sinp:focus{border-color:var(--teal)}
 .prop-avg{font-size:13px;font-weight:700;color:var(--teal);margin-left:auto}
 .prop-status-sel{font-size:12px;padding:5px 9px;border:1px solid var(--bdr2);border-radius:var(--rs);background:var(--sur);color:var(--tx);cursor:pointer;font-family:inherit}
-
-/* ── CALENDAR ── */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.cal-nav button{background:none;border:1px solid var(--bdr2);border-radius:var(--rs);padding:6px 14px;cursor:pointer;font-family:inherit;font-size:13px;color:var(--txm)}
-.cal-nav button:hover{background:var(--sand2)}
+.cal-nav button{background:none;border:1px solid var(--bdr2);border-radius:var(--rs);padding:6px 14px;cursor:pointer;font-family:inherit;font-size:13px;color:var(--txm)}.cal-nav button:hover{background:var(--sand2)}
 .cal-month-lbl{font-size:17px;font-weight:700;color:var(--warm)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--bdr);border-radius:var(--r);overflow:hidden}
 .cal-day-hdr{background:var(--warm);color:var(--sand);font-size:11px;font-weight:600;text-align:center;padding:8px 0;text-transform:uppercase;letter-spacing:0.05em}
 .cal-day{background:var(--sur);min-height:70px;padding:6px;font-size:12px}
-.cal-day.other-m{background:var(--sand2);color:var(--txf)}
-.cal-day.today{background:var(--teal-ll)}
+.cal-day.other-m{background:var(--sand2);color:var(--txf)}.cal-day.today{background:var(--teal-ll)}
 .cal-day-num{font-weight:600;font-size:11px;color:var(--txm);margin-bottom:3px}
 .cal-event{background:var(--purple-l);color:var(--purple);font-size:10px;font-weight:600;padding:2px 5px;border-radius:4px;margin-bottom:2px;line-height:1.3}
 .viewing-list-item{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow)}
 .viewing-date-box{width:46px;height:46px;background:var(--purple-l);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
 .viewing-date-d{font-size:18px;font-weight:700;color:var(--purple);line-height:1}
 .viewing-date-m{font-size:9px;font-weight:600;color:var(--purple);text-transform:uppercase}
-
+.loading-overlay{position:fixed;inset:0;background:var(--warm);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999;transition:opacity 0.4s}
+.loading-overlay.hidden{opacity:0;pointer-events:none}
+.loading-logo{width:56px;height:56px;background:var(--teal);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.loading-title{font-size:18px;font-weight:600;color:#F5F0E8}
+.loading-sub{font-size:13px;color:var(--warm3)}
 @media(max-width:640px){.sidebar{display:none}.main{padding:1rem}}
 </style>
 </head>
 <body>
 
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-logo">🏡</div>
+  <div class="loading-title">Talha and Abdullah Move in Together</div>
+  <div class="loading-sub" id="loading-sub">Connecting…</div>
+</div>
+
 <div class="top-bar">
   <div class="logo-mark">🏡</div>
-  <div class="app-title">Talha & Abdullah</div>
-  <div class="app-sub" id="top-prog"></div>
+  <div class="app-title">Talha and Abdullah Move in Together</div>
+  <div class="sync-indicator">
+    <div class="sync-dot" id="sync-dot"></div>
+    <span class="sync-text" id="sync-text">Connecting…</span>
+  </div>
 </div>
 
 <div class="layout">
@@ -221,14 +187,9 @@ input::placeholder{color:var(--txf)}
   </nav>
 
   <main class="main">
-
-    <!-- ══ SHOPPING LIST ══ -->
     <div id="panel-shopping" class="panel active">
       <div id="shop-list-view">
-        <div class="page-header">
-          <div class="page-title">Shopping list</div>
-          <div class="page-sub">Everything you need for the new home</div>
-        </div>
+        <div class="page-header"><div class="page-title">Shopping list</div><div class="page-sub">Everything you need for the new home</div></div>
         <div class="prog-bar-wrap"><div class="prog-bar-fill" id="shop-prog-fill" style="width:0%"></div></div>
         <div class="cat-tabs-bar" id="cat-tabs-bar"></div>
         <div id="cat-content"></div>
@@ -238,34 +199,17 @@ input::placeholder{color:var(--txf)}
         <div id="item-detail-content"></div>
       </div>
     </div>
-
-    <!-- ══ BUDGET ══ -->
     <div id="panel-budget" class="panel">
-      <div class="page-header">
-        <div class="page-title">Budget</div>
-        <div class="page-sub">Aggregated from all ordered items</div>
-      </div>
+      <div class="page-header"><div class="page-title">Budget</div><div class="page-sub">Aggregated from all ordered items</div></div>
       <div class="budget-summary" id="budget-summary"></div>
-      <div class="card" style="overflow:hidden">
-        <table class="budget-table" id="budget-table"></table>
-      </div>
+      <div class="card" style="overflow:hidden"><table class="budget-table" id="budget-table"></table></div>
     </div>
-
-    <!-- ══ ORDER TRACKER ══ -->
     <div id="panel-orders" class="panel">
-      <div class="page-header">
-        <div class="page-title">Order tracker</div>
-        <div class="page-sub">Everything you've ordered and whether it's arrived</div>
-      </div>
+      <div class="page-header"><div class="page-title">Order tracker</div><div class="page-sub">Everything you've ordered and whether it's arrived</div></div>
       <div class="card card-pad" id="orders-content"></div>
     </div>
-
-    <!-- ══ TASKS ══ -->
     <div id="panel-tasks" class="panel">
-      <div class="page-header">
-        <div class="page-title">Tasks</div>
-        <div class="page-sub">Things to get done before and after the move</div>
-      </div>
+      <div class="page-header"><div class="page-title">Tasks</div><div class="page-sub">Things to get done before and after the move</div></div>
       <div id="tasks-c"></div>
       <div class="card card-pad" style="margin-top:8px">
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--txf);margin-bottom:12px">Add a task</div>
@@ -277,146 +221,135 @@ input::placeholder{color:var(--txf)}
         </div>
       </div>
     </div>
-
-    <!-- ══ HOUSES ══ -->
     <div id="panel-houses" class="panel">
-      <div class="page-header">
-        <div class="page-title">Properties</div>
-        <div class="page-sub">Browse and score places you're considering</div>
-      </div>
+      <div class="page-header"><div class="page-title">Properties</div><div class="page-sub">Browse and score places you're considering</div></div>
       <div style="display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap">
         <input type="text" id="new-area-inp" placeholder="Add an area (e.g. Southampton, Winchester…)" style="flex:1" onkeydown="if(event.key==='Enter')addArea()"/>
         <button class="btn btn-primary" onclick="addArea()">+ Add area</button>
       </div>
       <div id="areas-container"></div>
     </div>
-
-    <!-- ══ CALENDAR ══ -->
     <div id="panel-calendar" class="panel">
-      <div class="page-header">
-        <div class="page-title">Viewings calendar</div>
-        <div class="page-sub">All your booked viewings in one place</div>
-      </div>
+      <div class="page-header"><div class="page-title">Viewings calendar</div><div class="page-sub">All your booked viewings in one place</div></div>
       <div class="cal-nav">
         <button onclick="changeMonth(-1)">← Prev</button>
         <div class="cal-month-lbl" id="cal-month-lbl"></div>
         <button onclick="changeMonth(1)">Next →</button>
       </div>
-      <div class="card" style="overflow:hidden;margin-bottom:1.5rem">
-        <div class="cal-grid" id="cal-grid"></div>
-      </div>
+      <div class="card" style="overflow:hidden;margin-bottom:1.5rem"><div class="cal-grid" id="cal-grid"></div></div>
       <div style="font-size:14px;font-weight:600;color:var(--warm);margin-bottom:10px">Upcoming viewings</div>
       <div id="viewings-list"></div>
     </div>
-
   </main>
 </div>
 
-<script>
-const SK='mp-v4';
-function load(){try{const r=localStorage.getItem(SK);if(r)return JSON.parse(r)}catch(e){}return null}
-function save(){try{localStorage.setItem(SK,JSON.stringify({cats,activeCat,tasks,areas,calYear,calMonth}))}catch(e){}}
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAgeXcn_f9YkI7XvKsTWGXpnsEfDWPhlfY",
+  authDomain: "moving-planner-39bd8.firebaseapp.com",
+  databaseURL: "https://moving-planner-39bd8-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "moving-planner-39bd8",
+  storageBucket: "moving-planner-39bd8.firebasestorage.app",
+  messagingSenderId: "226454824568",
+  appId: "1:226454824568:web:1a577c10fd9c7ff89c6f8d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
 const HOUSE_CRIT=['Location','Price','Size','Natural light','Outdoor space','Condition','Neighbourhood feel','Commute','Noise','Amenities nearby'];
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
-const DEF_CATS=[
-  {id:'c1',name:'Kitchen',items:[
-    {id:'i1',name:'Blender',status:'need',who:'Both',price:'',link:'',orderStatus:'ordered',options:[],criteria:[]},
-    {id:'i2',name:'Toaster',status:'need',who:'Talha',price:'',link:'',orderStatus:'ordered',options:[],criteria:[]},
-  ]},
-  {id:'c2',name:'Bathroom',items:[
-    {id:'i3',name:'Bin',status:'need',who:'Both',price:'',link:'',orderStatus:'ordered',options:[],criteria:[]},
-  ]},
-  {id:'c3',name:'White Goods',items:[
-    {id:'i4',name:'Vacuum cleaner',status:'need',who:'Both',price:'',link:'',orderStatus:'ordered',options:[
-      {id:'o1',name:'Dyson V15 Detect',link:'',scores:{}},
-      {id:'o2',name:'Shark IZ300UK',link:'',scores:{}},
-    ],criteria:['Suction power','Maneuverability','Aesthetics','Noise level','Price']},
-  ]},
-  {id:'c4',name:'Living Room',items:[
-    {id:'i5',name:'Rug',status:'need',who:'Abdullah',price:'',link:'',orderStatus:'ordered',options:[],criteria:[]},
-  ]},
-];
+let state = {
+  cats: [],
+  activeCat: null,
+  tasks: [],
+  areas: [],
+  calYear: new Date().getFullYear(),
+  calMonth: new Date().getMonth(),
+};
+let activeItemId = null;
+let ctr = 1000;
+function uid(){ return 'x' + Date.now() + (++ctr) }
 
-const saved=load();
-let cats=saved?saved.cats:DEF_CATS;
-let activeCat=saved?saved.activeCat:(cats[0]&&cats[0].id);
-let tasks=saved?saved.tasks:[
-  {id:'t1',text:'Notify change of address',done:false,tag:'admin',who:'Both'},
-  {id:'t2',text:'Set up joint household budget',done:false,tag:'general',who:'Both'},
-  {id:'t3',text:'Book removal van',done:false,tag:'urgent',who:'Talha'},
-  {id:'t4',text:'Sort council tax',done:false,tag:'admin',who:'Abdullah'},
-  {id:'t5',text:'Research internet providers',done:false,tag:'general',who:'Both'},
-];
-let areas=saved?saved.areas:[
-  {id:'a1',name:'Southampton',properties:[]},
-  {id:'a2',name:'Winchester',properties:[]},
-];
-let calYear=saved?saved.calYear:new Date().getFullYear();
-let calMonth=saved?saved.calMonth:new Date().getMonth();
-let activeItemId=null;
-let ctr=600;
-function uid(){return 'x'+(++ctr)}
-
-// ── helpers ──
-function avHtml(who,sz){
-  sz=sz||24;
-  const cls=who==='Talha'?'av-t':who==='Abdullah'?'av-a':'av-b';
-  const lbl=who==='Both'?'T+A':who[0];
-  return`<div class="avatar ${cls}" style="width:${sz}px;height:${sz}px;font-size:${Math.round(sz*0.38)}px">${lbl}</div>`;
+// ── SYNC STATUS ──
+function setSyncStatus(status, text){
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+  dot.className = 'sync-dot ' + status;
+  txt.textContent = text;
 }
-function fmt(n){return n?'£'+Number(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2}):''}
+
+// ── FIREBASE SAVE ──
+function saveToFirebase(path, data){
+  setSyncStatus('syncing','Saving…');
+  set(ref(db, path), data)
+    .then(()=>setSyncStatus('synced','Synced'))
+    .catch(()=>setSyncStatus('error','Sync error'));
+}
+function saveAll(){
+  saveToFirebase('planner', {
+    cats: state.cats,
+    activeCat: state.activeCat,
+    tasks: state.tasks,
+    areas: state.areas,
+    calYear: state.calYear,
+    calMonth: state.calMonth,
+  });
+}
+
+// ── HELPERS ──
+function avHtml(who, sz){
+  sz = sz||24;
+  const cls = who==='Talha'?'av-t':who==='Abdullah'?'av-a':'av-b';
+  const lbl = who==='Both'?'T+A':who[0];
+  return `<div class="avatar ${cls}" style="width:${sz}px;height:${sz}px;font-size:${Math.round(sz*0.38)}px">${lbl}</div>`;
+}
+function fmt(n){ return n ? '£' + Number(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2}) : '' }
 
 // ── SHOPPING ──
-function getCat(){return cats.find(c=>c.id===activeCat)}
-function getItem(iid){for(const c of cats){const i=c.items.find(i=>i.id===iid);if(i)return{cat:c,item:i}}return null}
-
-function renderShoppingProgress(){
-  const all=cats.flatMap(c=>c.items);
-  const done=all.filter(i=>i.status==='have'||i.status==='not');
-  const pct=all.length?Math.round(done.length/all.length*100):0;
-  document.getElementById('shop-prog-fill').style.width=pct+'%';
-  document.getElementById('top-prog').textContent=pct+'% sorted';
-}
-
-function renderCatTabs(){
-  document.getElementById('cat-tabs-bar').innerHTML=
-    cats.map(c=>`<button class="cat-tab${c.id===activeCat?' active':''}" onclick="setActiveCat('${c.id}')">${c.name}</button>`).join('')+
-    `<button class="add-cat-tab" onclick="promptAddCat()">+ Category</button>`;
-}
+function getCat(){ return state.cats.find(c=>c.id===state.activeCat) }
+function getItem(iid){ for(const c of state.cats){ const i=c.items&&c.items.find(i=>i.id===iid); if(i)return{cat:c,item:i} } return null }
 
 function calcItemWinner(item){
-  if(!item.criteria||!item.criteria.length||!item.options||!item.options.length)return null;
-  const scores=item.options.map(o=>{
-    const vals=item.criteria.map((_,i)=>{
-      const t=o.scores&&o.scores['c'+i+'_t'],a=o.scores&&o.scores['c'+i+'_a'];
-      return(t&&a)?((Number(t)+Number(a))/2):null;
-    }).filter(v=>v!==null);
-    return{id:o.id,s:vals.length?Math.round((vals.reduce((s,v)=>s+v,0)/vals.length)*10)/10:null};
-  });
-  const valid=scores.filter(s=>s.s!==null);
-  if(!valid.length)return null;
+  if(!item.criteria||!item.criteria.length||!item.options||!item.options.length) return null;
+  const scores = item.options.map(o=>({id:o.id, s:calcOptionScore(o, item.criteria||[], item.weights||[])}));
+  const valid = scores.filter(s=>s.s!==null);
+  if(!valid.length) return null;
   return valid.reduce((a,b)=>b.s>a.s?b:a).id;
 }
 
+function renderShopProgress(){
+  const all = state.cats.flatMap(c=>c.items||[]);
+  const done = all.filter(i=>i.status==='have'||i.status==='not');
+  const pct = all.length ? Math.round(done.length/all.length*100) : 0;
+  document.getElementById('shop-prog-fill').style.width = pct+'%';
+}
+
+function renderCatTabs(){
+  document.getElementById('cat-tabs-bar').innerHTML =
+    state.cats.map(c=>`<button class="cat-tab${c.id===state.activeCat?' active':''}" onclick="setActiveCat('${c.id}')">${c.name}</button>`).join('') +
+    `<button class="add-cat-tab" onclick="promptAddCat()">+ Category</button>`;
+}
+
 function renderCatContent(){
-  const cat=getCat();
-  if(!cat){document.getElementById('cat-content').innerHTML='';return;}
-  const winnerMap={};
-  cat.items.forEach(item=>{winnerMap[item.id]=calcItemWinner(item)});
-  document.getElementById('cat-content').innerHTML=`
-<div class="card">
-  <div class="card-pad">
-    ${cat.items.length===0?`<div style="text-align:center;padding:1.5rem;color:var(--txf);font-size:14px">No items yet</div>`:''}
-    ${cat.items.map(item=>{
-      const winner=winnerMap[item.id]?item.options.find(o=>o.id===winnerMap[item.id]):null;
-      return`<div class="item-row" onclick="openItemDetail('${item.id}')">
+  const cat = getCat();
+  if(!cat){ document.getElementById('cat-content').innerHTML=''; return; }
+  document.getElementById('cat-content').innerHTML = `
+<div class="card"><div class="card-pad">
+  ${!cat.items||cat.items.length===0 ? `<div style="text-align:center;padding:1.5rem;color:var(--txf);font-size:14px">No items yet</div>` : ''}
+  ${(cat.items||[]).map(item=>{
+    const wid = calcItemWinner(item);
+    const winner = wid ? (item.options||[]).find(o=>o.id===wid) : null;
+    return `<div class="item-row" onclick="openItemDetail('${item.id}')">
   <div style="flex:1;display:flex;align-items:center;gap:8px;min-width:0">
     <span class="item-name-main">${item.name}</span>
-    ${winner?`<span class="item-winner-tag">→ ${winner.name}</span>`:''}
-    ${item.options&&item.options.length?`<span style="font-size:11px;color:var(--txf)">${item.options.length} option${item.options.length!==1?'s':''}</span>`:''}
+    ${winner ? `<span class="item-winner-tag">→ ${winner.name}</span>` : ''}
+    ${item.options&&item.options.length ? `<span style="font-size:11px;color:var(--txf)">${item.options.length} option${item.options.length!==1?'s':''}</span>` : ''}
   </div>
   ${avHtml(item.who)}
   <select class="item-status-sel" onclick="event.stopPropagation()" onchange="setItemStatus('${item.id}',this.value)">
@@ -425,210 +358,230 @@ function renderCatContent(){
     <option value="have"${item.status==='have'?' selected':''}>Already have</option>
     <option value="not"${item.status==='not'?' selected':''}>Not required</option>
   </select>
-  <button class="btn-icon" onclick="event.stopPropagation();delShopItem('${cat.id}','${item.id}')" title="Delete">×</button>
+  <button class="btn-icon" onclick="event.stopPropagation();delShopItem('${cat.id}','${item.id}')">×</button>
 </div>`;}).join('')}
-    <div class="add-item-row">
-      <input type="text" id="new-item-inp" placeholder="Add item…" onkeydown="if(event.key==='Enter')addShopItem('${cat.id}')"/>
-      <select id="new-item-who"><option value="Both">Both</option><option value="Talha">Talha</option><option value="Abdullah">Abdullah</option></select>
-      <button class="btn btn-primary btn-sm" onclick="addShopItem('${cat.id}')">+ Add</button>
-    </div>
+  <div class="add-item-row">
+    <input type="text" id="new-item-inp" placeholder="Add item…" onkeydown="if(event.key==='Enter')addShopItem('${cat.id}')"/>
+    <select id="new-item-who"><option value="Both">Both</option><option value="Talha">Talha</option><option value="Abdullah">Abdullah</option></select>
+    <button class="btn btn-primary btn-sm" onclick="addShopItem('${cat.id}')">+ Add</button>
   </div>
-</div>`;
+</div></div>`;
 }
 
-function renderShopList(){renderShoppingProgress();renderCatTabs();renderCatContent()}
-function setActiveCat(id){activeCat=id;save();renderShopList()}
-function promptAddCat(){const n=prompt('Category name:');if(n&&n.trim()){const id=uid();cats.push({id,name:n.trim(),items:[]});activeCat=id;save();renderShopList()}}
+function renderShopList(){ renderShopProgress(); renderCatTabs(); renderCatContent(); }
 
-function setItemStatus(iid,val){
-  const r=getItem(iid);if(!r)return;
-  r.item.status=val;
-  save();renderShopList();
+window.setActiveCat = function(id){ state.activeCat=id; saveAll(); renderShopList(); }
+window.promptAddCat = function(){
+  const n = prompt('Category name:');
+  if(n&&n.trim()){ const id=uid(); state.cats.push({id,name:n.trim(),items:[]}); state.activeCat=id; saveAll(); renderShopList(); }
 }
-function delShopItem(cid,iid){const c=cats.find(c=>c.id===cid);if(c)c.items=c.items.filter(i=>i.id!==iid);save();renderShopList()}
-function addShopItem(cid){
-  const inp=document.getElementById('new-item-inp'),who=document.getElementById('new-item-who');
-  if(!inp||!inp.value.trim())return;
-  const c=cats.find(c=>c.id===cid);
-  if(c)c.items.push({id:uid(),name:inp.value.trim(),status:'need',who:who?who.value:'Both',price:'',link:'',orderStatus:'ordered',options:[],criteria:[]});
-  save();renderShopList();
+window.setItemStatus = function(iid, val){
+  const r = getItem(iid); if(!r) return;
+  r.item.status = val; saveAll(); renderShopList();
+}
+window.delShopItem = function(cid, iid){
+  const c = state.cats.find(c=>c.id===cid); if(c) c.items=(c.items||[]).filter(i=>i.id!==iid);
+  saveAll(); renderShopList();
+}
+window.addShopItem = function(cid){
+  const inp=document.getElementById('new-item-inp'), who=document.getElementById('new-item-who');
+  if(!inp||!inp.value.trim()) return;
+  const c=state.cats.find(c=>c.id===cid);
+  if(c){ if(!c.items)c.items=[]; c.items.push({id:uid(),name:inp.value.trim(),status:'need',who:who?who.value:'Both',price:'',link:'',orderStatus:'ordered',options:[],criteria:[]}); }
+  saveAll(); renderShopList();
 }
 
 // ── ITEM DETAIL ──
-function openItemDetail(iid){
+window.openItemDetail = function(iid){
   activeItemId=iid;
   document.getElementById('shop-list-view').style.display='none';
   document.getElementById('shop-item-view').style.display='block';
   renderItemDetail();
 }
-function closeItemDetail(){
+window.closeItemDetail = function(){
   activeItemId=null;
   document.getElementById('shop-list-view').style.display='block';
   document.getElementById('shop-item-view').style.display='none';
   renderShopList();
 }
 
-function calcOptionScore(option,criteria){
-  const vals=criteria.map((_,i)=>{
-    const t=option.scores&&option.scores['c'+i+'_t'],a=option.scores&&option.scores['c'+i+'_a'];
-    return(t&&a)?((Number(t)+Number(a))/2):null;
-  }).filter(v=>v!==null);
-  if(!vals.length)return null;
-  return Math.round((vals.reduce((s,v)=>s+v,0)/vals.length)*10)/10;
+function calcOptionScore(option, criteria, weights){
+  // criteria is array of strings, weights is array of numbers (percentages summing to 100)
+  let totalWeight = 0, weightedSum = 0, anyScored = false;
+  (criteria||[]).forEach((_,i)=>{
+    const t=option.scores&&option.scores['c'+i+'_t'], a=option.scores&&option.scores['c'+i+'_a'];
+    if(t&&a){
+      const avg=(Number(t)+Number(a))/2;
+      const w=(weights&&weights[i])||0;
+      weightedSum += avg*(w/100);
+      totalWeight += w;
+      anyScored = true;
+    }
+  });
+  if(!anyScored||totalWeight===0) return null;
+  // normalise in case not all criteria are scored
+  return Math.round((weightedSum/totalWeight)*100*10)/10;
 }
 
 function renderItemDetail(){
-  const r=getItem(activeItemId);if(!r)return;
-  const{cat,item}=r;
-  const scores=item.options.map(o=>({o,s:calcOptionScore(o,item.criteria||[])}));
-  const maxS=Math.max(...scores.map(x=>x.s||0));
-  const winnerId=maxS>0?scores.find(x=>x.s===maxS)?.o.id:null;
+  const r = getItem(activeItemId); if(!r) return;
+  const{cat,item} = r;
+  const scores = (item.options||[]).map(o=>({o, s:calcOptionScore(o, item.criteria||[], item.weights||[])}));
+  const maxS = Math.max(...scores.map(x=>x.s||0));
+  const winnerId = maxS>0 ? scores.find(x=>x.s===maxS)?.o.id : null;
 
-  let html=`
+  let html = `
 <div class="page-header">
   <div class="page-title">${item.name}</div>
-  <div class="page-sub">${cat.name} · ${avHtml(item.who,18)} <span style="font-size:13px;color:var(--txm)">${item.who}</span></div>
+  <div class="page-sub" style="display:flex;align-items:center;gap:6px">${cat.name} · ${avHtml(item.who,18)} <span style="font-size:13px;color:var(--txm)">${item.who}</span></div>
 </div>
-
-<!-- Status & price & link (shown when ordered) -->
 <div class="card card-pad" style="margin-bottom:1rem">
   <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
     <div style="font-size:13px;color:var(--txm);font-weight:500">Status</div>
-    <select class="item-status-sel" onchange="setItemStatus('${item.id}',this.value)">
+    <select class="item-status-sel" onchange="setItemStatus('${item.id}',this.value);renderItemDetail()">
       <option value="need"${item.status==='need'?' selected':''}>Need to purchase</option>
       <option value="ordered"${item.status==='ordered'?' selected':''}>Ordered</option>
       <option value="have"${item.status==='have'?' selected':''}>Already have</option>
       <option value="not"${item.status==='not'?' selected':''}>Not required</option>
     </select>
-    ${item.status==='ordered'?`
+    ${item.status==='ordered' ? `
     <input type="number" placeholder="Price (£)" value="${item.price||''}" style="width:120px" onchange="updateItemField('${item.id}','price',this.value)" min="0" step="0.01"/>
     <input type="url" placeholder="Link to purchase…" value="${item.link||''}" style="flex:1;min-width:180px" onchange="updateItemField('${item.id}','link',this.value)"/>
-    ${item.link?`<a href="${item.link}" target="_blank" class="link-open">↗ Open</a>`:''}
-    `:''}
+    ${item.link ? `<a href="${item.link}" target="_blank" class="link-open">↗ Open</a>` : ''}` : ''}
   </div>
 </div>
-
-<!-- OPTIONS -->
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
   <div style="font-size:16px;font-weight:700;color:var(--warm)">Options to compare</div>
   <button class="btn btn-ghost btn-sm" onclick="addOption('${item.id}')">+ Add option</button>
 </div>`;
 
-  if(item.options.length===0){
-    html+=`<div class="card card-pad" style="text-align:center;color:var(--txf);font-size:14px;margin-bottom:1rem">No options yet — add one to start comparing</div>`;
+  if(!item.options||item.options.length===0){
+    html += `<div class="card card-pad" style="text-align:center;color:var(--txf);font-size:14px;margin-bottom:1rem">No options yet — add one to start comparing</div>`;
   } else {
-    // Criteria editor
-    html+=`<div class="criteria-editor" style="margin-bottom:1rem">
-<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--txm);margin-bottom:8px">Scoring criteria</div>
-<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
-${(item.criteria||[]).map((c,i)=>`<div class="crit-pill"><input type="text" value="${c}" style="width:${Math.max(60,c.length*7+10)}px" onchange="updateCritName('${item.id}',${i},this.value)"/><button class="btn-icon" style="font-size:13px" onclick="delCrit('${item.id}',${i})">×</button></div>`).join('')}
-<button class="btn btn-ghost btn-sm" onclick="addCrit('${item.id}')">+ Criteria</button>
+    const totalW = (item.weights||[]).reduce((s,w)=>s+Number(w||0),0);
+    const wOk = Math.round(totalW)===100;
+    html += `<div class="criteria-editor" style="margin-bottom:1rem">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+  <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--txm)">Scoring criteria & weights</div>
+  <span style="font-size:12px;font-weight:600;${wOk?'color:var(--teal-d)':'color:var(--coral)'}">${Math.round(totalW)}% ${wOk?'✓':'— must equal 100%'}</span>
 </div>
+<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">
+${(item.criteria||[]).map((c,i)=>`<div style="display:flex;align-items:center;gap:6px;background:var(--sur);border:1px solid var(--bdr2);border-radius:8px;padding:6px 10px">
+  <input type="text" value="${c}" style="flex:1;border:none;background:transparent;font-size:13px;color:var(--tx);outline:none;min-width:80px" onchange="updateCritName('${item.id}',${i},this.value)"/>
+  <input type="number" min="0" max="100" step="5" value="${(item.weights&&item.weights[i])||0}" style="width:60px;font-size:13px;font-weight:600;color:var(--teal);border:1px solid var(--bdr2);border-radius:6px;padding:3px 6px;text-align:center;background:var(--teal-ll)" onchange="updateCritWeight('${item.id}',${i},this.value)"/>
+  <span style="font-size:12px;color:var(--txm)">%</span>
+  <button class="btn-icon" style="font-size:13px" onclick="delCrit('${item.id}',${i})">×</button>
+</div>`).join('')}
+</div>
+<button class="btn btn-ghost btn-sm" onclick="addCrit('${item.id}')">+ Add criteria</button>
 </div>`;
 
     scores.forEach(({o,s})=>{
-      const isW=o.id===winnerId;
-      const pct=s?Math.round((s/10)*100):0;
-      html+=`<div class="option-card${isW?' winner-card':''}">
+      const isW = o.id===winnerId;
+      const pct = s ? Math.round((s/10)*100) : 0;
+      html += `<div class="option-card${isW?' winner-card':''}">
 <div class="option-header" onclick="toggleOption('${item.id}','${o.id}')">
   <div style="flex:1;display:flex;align-items:center;gap:8px">
     ${isW?'<span class="win-badge">🏆 Winner</span>':''}
     <span class="option-name">${o.name}</span>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
-    ${s!==null?`<div class="score-bar-sm"><div class="score-bar-fill" style="width:${pct}%"></div></div><span class="option-score">${s.toFixed(1)}</span>`:`<span class="option-score empty">No scores yet</span>`}
+    ${s!==null ? `<div class="score-bar-sm"><div class="score-bar-fill" style="width:${pct}%"></div></div><span class="option-score">${s.toFixed(1)}</span>` : `<span class="option-score empty">No scores yet</span>`}
     <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="transform:rotate(${o.open?180:0}deg);transition:transform 0.2s;color:var(--txf)"><polyline points="6 9 12 15 18 9"/></svg>
   </div>
 </div>
-${o.open?`<div class="option-body">
+${o.open ? `<div class="option-body">
   <div class="option-link-row">
     <input type="url" placeholder="Link (e.g. Amazon, retailer…)" value="${o.link||''}" onchange="updateOptionField('${item.id}','${o.id}','link',this.value)"/>
-    ${o.link?`<a href="${o.link}" target="_blank" class="link-open">↗ Open link</a>`:''}
+    ${o.link ? `<a href="${o.link}" target="_blank" class="link-open">↗ Open link</a>` : ''}
     <button class="btn btn-danger btn-sm" onclick="delOption('${item.id}','${o.id}')">Remove</button>
   </div>
-  ${(item.criteria||[]).length?`
+  ${(item.criteria||[]).length ? `
   <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--txf);margin-bottom:6px">Scores (1–10)</div>
-  ${item.criteria.map((crit,i)=>`<div class="crit-score-row">
+  ${(item.criteria||[]).map((crit,i)=>`<div class="crit-score-row">
     <span class="crit-lbl">${crit}</span>
+    <span style="font-size:10px;font-weight:600;color:var(--teal-d);background:var(--teal-ll);padding:1px 6px;border-radius:10px;white-space:nowrap">${(item.weights&&item.weights[i])||0}%</span>
     <div class="score-pair">
-      ${avHtml('Talha',20)}<span class="slbl" style="margin-left:2px">T</span>
+      ${avHtml('Talha',20)}<span class="slbl">T</span>
       <input type="number" class="sinp" min="1" max="10" step="1" placeholder="—" value="${o.scores&&o.scores['c'+i+'_t']||''}" onchange="setOptionScore('${item.id}','${o.id}','c${i}_t',this.value)"/>
       ${avHtml('Abdullah',20)}<span class="slbl">A</span>
       <input type="number" class="sinp" min="1" max="10" step="1" placeholder="—" value="${o.scores&&o.scores['c'+i+'_a']||''}" onchange="setOptionScore('${item.id}','${o.id}','c${i}_a',this.value)"/>
     </div>
-  </div>`).join('')}`:`<div style="color:var(--txf);font-size:13px;padding:8px 0">Add criteria above to start scoring</div>`}
-</div>`:''}
+  </div>`).join('')}` : `<div style="color:var(--txf);font-size:13px;padding:8px 0">Add criteria above to start scoring</div>`}
+</div>` : ''}
 </div>`;
     });
   }
-
-  document.getElementById('item-detail-content').innerHTML=html;
+  document.getElementById('item-detail-content').innerHTML = html;
 }
 
-function updateItemField(iid,key,val){const r=getItem(iid);if(r)r.item[key]=val;save();if(activeItemId===iid)renderItemDetail();}
-function addOption(iid){const r=getItem(iid);if(!r)return;if(!r.item.options)r.item.options=[];r.item.options.push({id:uid(),name:prompt('Option name (e.g. Dyson V15):')||'New option',link:'',open:true,scores:{}});save();renderItemDetail()}
-function delOption(iid,oid){const r=getItem(iid);if(r)r.item.options=r.item.options.filter(o=>o.id!==oid);save();renderItemDetail()}
-function toggleOption(iid,oid){const r=getItem(iid);const o=r&&r.item.options.find(o=>o.id===oid);if(o)o.open=!o.open;save();renderItemDetail()}
-function updateOptionField(iid,oid,key,val){const r=getItem(iid);const o=r&&r.item.options.find(o=>o.id===oid);if(o)o[key]=val;save();}
-function setOptionScore(iid,oid,key,val){
-  const r=getItem(iid);const o=r&&r.item.options.find(o=>o.id===oid);
-  if(o){if(!o.scores)o.scores={};const n=Math.min(10,Math.max(1,Number(val)||0));o.scores[key]=n||undefined;save();renderItemDetail();}
+window.updateItemField = function(iid, key, val){ const r=getItem(iid); if(r)r.item[key]=val; saveAll(); }
+window.addOption = function(iid){
+  const r=getItem(iid); if(!r) return;
+  const n=prompt('Option name (e.g. Dyson V15):'); if(!n||!n.trim()) return;
+  if(!r.item.options)r.item.options=[];
+  r.item.options.push({id:uid(),name:n.trim(),link:'',open:true,scores:{}});
+  saveAll(); renderItemDetail();
 }
-function addCrit(iid){const r=getItem(iid);if(r){if(!r.item.criteria)r.item.criteria=[];r.item.criteria.push('New criteria');save();renderItemDetail()}}
-function delCrit(iid,idx){const r=getItem(iid);if(r&&r.item.criteria){r.item.criteria.splice(idx,1);save();renderItemDetail()}}
-function updateCritName(iid,idx,val){const r=getItem(iid);if(r&&r.item.criteria)r.item.criteria[idx]=val;save();}
+window.delOption = function(iid, oid){ const r=getItem(iid); if(r)r.item.options=(r.item.options||[]).filter(o=>o.id!==oid); saveAll(); renderItemDetail(); }
+window.toggleOption = function(iid, oid){ const r=getItem(iid); const o=r&&(r.item.options||[]).find(o=>o.id===oid); if(o)o.open=!o.open; saveAll(); renderItemDetail(); }
+window.updateOptionField = function(iid, oid, key, val){ const r=getItem(iid); const o=r&&(r.item.options||[]).find(o=>o.id===oid); if(o)o[key]=val; saveAll(); }
+window.setOptionScore = function(iid, oid, key, val){
+  const r=getItem(iid); const o=r&&(r.item.options||[]).find(o=>o.id===oid);
+  if(o){ if(!o.scores)o.scores={}; const n=Math.min(10,Math.max(1,Number(val)||0)); o.scores[key]=n||undefined; saveAll(); renderItemDetail(); }
+}
+window.addCrit = function(iid){
+  const r=getItem(iid); if(!r) return;
+  if(!r.item.criteria) r.item.criteria=[];
+  if(!r.item.weights) r.item.weights=[];
+  r.item.criteria.push('New criteria');
+  r.item.weights.push(0);
+  saveAll(); renderItemDetail();
+}
+window.delCrit = function(iid, idx){
+  const r=getItem(iid); if(!r) return;
+  if(r.item.criteria) r.item.criteria.splice(idx,1);
+  if(r.item.weights) r.item.weights.splice(idx,1);
+  saveAll(); renderItemDetail();
+}
+window.updateCritName = function(iid, idx, val){ const r=getItem(iid); if(r&&r.item.criteria)r.item.criteria[idx]=val; saveAll(); }
+window.updateCritWeight = function(iid, idx, val){
+  const r=getItem(iid); if(!r) return;
+  if(!r.item.weights) r.item.weights=[];
+  while(r.item.weights.length<(r.item.criteria||[]).length) r.item.weights.push(0);
+  r.item.weights[idx]=Number(val)||0;
+  saveAll(); renderItemDetail();
+}
 
 // ── BUDGET ──
 function renderBudget(){
   const ordered=[];
-  cats.forEach(cat=>{
-    cat.items.forEach(item=>{
-      if(item.status==='ordered'&&item.price){
-        ordered.push({cat:cat.name,name:item.name,price:Number(item.price)||0,link:item.link||''});
-      }
-    });
-  });
+  state.cats.forEach(cat=>{ (cat.items||[]).forEach(item=>{ if(item.status==='ordered'&&item.price) ordered.push({cat:cat.name,name:item.name,price:Number(item.price)||0,link:item.link||''}); }); });
   const total=ordered.reduce((s,i)=>s+i.price,0);
   const byCat={};
-  ordered.forEach(i=>{if(!byCat[i.cat])byCat[i.cat]=0;byCat[i.cat]+=i.price});
-
+  ordered.forEach(i=>{ if(!byCat[i.cat])byCat[i.cat]=0; byCat[i.cat]+=i.price; });
   document.getElementById('budget-summary').innerHTML=`
-<div class="budget-card"><div class="budget-card-label">Total spent</div><div class="budget-card-value teal">${fmt(total)}</div></div>
+<div class="budget-card"><div class="budget-card-label">Total spent</div><div class="budget-card-value teal">${fmt(total)||'£0.00'}</div></div>
 <div class="budget-card"><div class="budget-card-label">Items ordered</div><div class="budget-card-value">${ordered.length}</div></div>
 <div class="budget-card"><div class="budget-card-label">Categories</div><div class="budget-card-value">${Object.keys(byCat).length}</div></div>`;
-
-  if(!ordered.length){
-    document.getElementById('budget-table').innerHTML=`<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--txf)">No ordered items with prices yet</td></tr>`;
-    return;
-  }
+  if(!ordered.length){ document.getElementById('budget-table').innerHTML=`<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--txf)">No ordered items with prices yet</td></tr>`; return; }
   let rows=`<thead><tr><th>Item</th><th>Category</th><th>Link</th><th style="text-align:right">Price</th></tr></thead><tbody>`;
   Object.keys(byCat).forEach(catName=>{
     rows+=`<tr class="budget-cat-header"><td colspan="3">${catName}</td><td style="text-align:right;font-weight:700">${fmt(byCat[catName])}</td></tr>`;
-    ordered.filter(i=>i.cat===catName).forEach(i=>{
-      rows+=`<tr><td>${i.name}</td><td><span style="font-size:11px;color:var(--txm)">${i.cat}</span></td><td>${i.link?`<a href="${i.link}" target="_blank" class="link-open" style="font-size:11px">↗ Link</a>`:''}</td><td style="text-align:right;font-weight:600;color:var(--teal)">${fmt(i.price)}</td></tr>`;
-    });
+    ordered.filter(i=>i.cat===catName).forEach(i=>{ rows+=`<tr><td>${i.name}</td><td><span style="font-size:11px;color:var(--txm)">${i.cat}</span></td><td>${i.link?`<a href="${i.link}" target="_blank" class="order-link" style="font-size:11px">↗ Link</a>`:''}</td><td style="text-align:right;font-weight:600;color:var(--teal)">${fmt(i.price)}</td></tr>`; });
   });
   rows+=`<tr><td colspan="3" style="font-weight:700;font-size:14px">Total</td><td style="text-align:right;font-weight:700;font-size:16px;color:var(--teal)">${fmt(total)}</td></tr></tbody>`;
   document.getElementById('budget-table').innerHTML=rows;
 }
 
-// ── ORDER TRACKER ──
+// ── ORDERS ──
 function renderOrders(){
   const ordered=[];
-  cats.forEach(cat=>{
-    cat.items.forEach(item=>{
-      if(item.status==='ordered'){
-        ordered.push({catId:cat.id,itemId:item.id,cat:cat.name,name:item.name,price:item.price||'',link:item.link||'',orderStatus:item.orderStatus||'ordered'});
-      }
-    });
-  });
+  state.cats.forEach(cat=>{ (cat.items||[]).forEach(item=>{ if(item.status==='ordered') ordered.push({catId:cat.id,itemId:item.id,cat:cat.name,name:item.name,price:item.price||'',link:item.link||'',orderStatus:item.orderStatus||'ordered'}); }); });
   const c=document.getElementById('orders-content');
-  if(!ordered.length){c.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--txf);font-size:14px">No ordered items yet — set an item's status to 'Ordered' in the shopping list</div>`;return;}
+  if(!ordered.length){ c.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--txf);font-size:14px">No ordered items yet — set an item's status to 'Ordered' in the shopping list</div>`; return; }
   c.innerHTML=ordered.map(o=>`<div class="order-row">
-  <div style="flex:1;min-width:0">
-    <div class="order-name">${o.name}</div>
-    <span class="order-cat">${o.cat}</span>
-  </div>
+  <div style="flex:1;min-width:0"><div class="order-name">${o.name}</div><span class="order-cat">${o.cat}</span></div>
   ${o.price?`<span class="order-price">${fmt(o.price)}</span>`:''}
   ${o.link?`<a href="${o.link}" target="_blank" class="order-link">↗ View</a>`:''}
   <select class="order-status-sel" onchange="setOrderStatus('${o.itemId}',this.value)">
@@ -637,72 +590,68 @@ function renderOrders(){
   </select>
 </div>`).join('');
 }
-function setOrderStatus(iid,val){const r=getItem(iid);if(r)r.item.orderStatus=val;save();renderOrders()}
+window.setOrderStatus = function(iid, val){ const r=getItem(iid); if(r)r.item.orderStatus=val; saveAll(); renderOrders(); }
 
 // ── TASKS ──
 function renderTasks(){
-  const cats2=[{k:'urgent',l:'Urgent'},{k:'admin',l:'Admin'},{k:'general',l:'General'}];
-  const todo=tasks.filter(t=>!t.done),done=tasks.filter(t=>t.done);
+  const cats=[{k:'urgent',l:'Urgent'},{k:'admin',l:'Admin'},{k:'general',l:'General'}];
+  const todo=state.tasks.filter(t=>!t.done), done=state.tasks.filter(t=>t.done);
   document.getElementById('tasks-c').innerHTML=
-    cats2.map(cat=>{
-      const ct=todo.filter(t=>t.tag===cat.k);if(!ct.length)return'';
+    cats.map(cat=>{ const ct=todo.filter(t=>t.tag===cat.k); if(!ct.length)return'';
       return`<div class="card card-pad" style="margin-bottom:10px">
 <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--txf);margin-bottom:10px">${cat.l}</div>
 ${ct.map(t=>`<div class="order-row">
   <input type="checkbox" style="width:16px;height:16px;accent-color:var(--teal);flex-shrink:0;cursor:pointer" onchange="toggleTask('${t.id}')"/>
   <span style="flex:1;font-size:14px">${t.text}</span>
-  ${avHtml(t.who,22)}
-  <span style="font-size:12px;color:var(--txm)">${t.who}</span>
+  ${avHtml(t.who,22)}<span style="font-size:12px;color:var(--txm)">${t.who}</span>
   <button class="btn-icon" onclick="delTask('${t.id}')">×</button>
-</div>`).join('')}
-</div>`;}).join('')+
+</div>`).join('')}</div>`;}).join('')+
     (done.length?`<div class="card card-pad" style="margin-bottom:10px">
 <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--txf);margin-bottom:10px">Done (${done.length})</div>
 ${done.map(t=>`<div class="order-row" style="opacity:0.5">
   <input type="checkbox" checked style="width:16px;height:16px;accent-color:var(--teal);flex-shrink:0;cursor:pointer" onchange="toggleTask('${t.id}')"/>
   <span style="flex:1;font-size:14px;text-decoration:line-through">${t.text}</span>
   <button class="btn-icon" onclick="delTask('${t.id}')">×</button>
-</div>`).join('')}
-</div>`:'');
+</div>`).join('')}</div>`:'');
 }
-function toggleTask(id){const t=tasks.find(t=>t.id===id);if(t)t.done=!t.done;save();renderTasks()}
-function delTask(id){tasks=tasks.filter(t=>t.id!==id);save();renderTasks()}
-function addTask(){
-  const inp=document.getElementById('new-task'),tag=document.getElementById('task-tag'),who=document.getElementById('task-who');
-  if(!inp.value.trim())return;
-  tasks.push({id:uid(),text:inp.value.trim(),done:false,tag:tag.value,who:who.value});
-  inp.value='';save();renderTasks();
+window.toggleTask = function(id){ const t=state.tasks.find(t=>t.id===id); if(t)t.done=!t.done; saveAll(); renderTasks(); }
+window.delTask = function(id){ state.tasks=state.tasks.filter(t=>t.id!==id); saveAll(); renderTasks(); }
+window.addTask = function(){
+  const inp=document.getElementById('new-task'), tag=document.getElementById('task-tag'), who=document.getElementById('task-who');
+  if(!inp.value.trim()) return;
+  state.tasks.push({id:uid(),text:inp.value.trim(),done:false,tag:tag.value,who:who.value});
+  inp.value=''; saveAll(); renderTasks();
 }
 
 // ── HOUSES ──
 function calcPropScore(prop){
   const vals=[];
-  HOUSE_CRIT.forEach((_,i)=>{const t=prop.scores&&prop.scores['h'+i+'_t'],a=prop.scores&&prop.scores['h'+i+'_a'];if(t&&a)vals.push((Number(t)+Number(a))/2)});
-  if(!vals.length)return null;
+  HOUSE_CRIT.forEach((_,i)=>{ const t=prop.scores&&prop.scores['h'+i+'_t'], a=prop.scores&&prop.scores['h'+i+'_a']; if(t&&a)vals.push((Number(t)+Number(a))/2); });
+  if(!vals.length) return null;
   return Math.round((vals.reduce((s,v)=>s+v,0)/vals.length)*10)/10;
 }
 function getAllViewings(){
   const v=[];
-  areas.forEach(area=>{(area.properties||[]).forEach(prop=>{if(prop.status==='viewing'&&prop.viewingDate)v.push({propName:prop.name,area:area.name,date:prop.viewingDate,time:prop.viewingTime||'',notes:prop.viewingNotes||''})})});
+  state.areas.forEach(area=>{ (area.properties||[]).forEach(prop=>{ if(prop.status==='viewing'&&prop.viewingDate) v.push({propName:prop.name,area:area.name,date:prop.viewingDate,time:prop.viewingTime||'',notes:prop.viewingNotes||''}); }); });
   return v.sort((a,b)=>a.date.localeCompare(b.date));
 }
 function renderAreas(){
   const c=document.getElementById('areas-container');
-  if(!areas.length){c.innerHTML='<div style="text-align:center;padding:2rem;color:var(--txf);font-size:14px">Add an area above to get started</div>';return;}
-  c.innerHTML=areas.map(area=>`
+  if(!state.areas.length){ c.innerHTML='<div style="text-align:center;padding:2rem;color:var(--txf);font-size:14px">Add an area above to get started</div>'; return; }
+  c.innerHTML=state.areas.map(area=>`
 <div class="area-section">
   <div class="area-hdr">
     <div class="area-title">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      ${area.name}<span class="area-count">${area.properties.length} propert${area.properties.length!==1?'ies':'y'}</span>
+      ${area.name}<span class="area-count">${(area.properties||[]).length} propert${(area.properties||[]).length!==1?'ies':'y'}</span>
     </div>
     <div class="area-actions">
       <button class="btn btn-ghost btn-sm" onclick="addProperty('${area.id}')">+ Property</button>
       <button class="btn btn-danger btn-sm" onclick="delArea('${area.id}')">Delete area</button>
     </div>
   </div>
-  ${area.properties.length===0?`<div class="card card-pad" style="text-align:center;color:var(--txf);font-size:14px">No properties yet</div>`:''}
-  ${area.properties.map(prop=>{
+  ${!(area.properties&&area.properties.length)?`<div class="card card-pad" style="text-align:center;color:var(--txf);font-size:14px">No properties yet</div>`:''}
+  ${(area.properties||[]).map(prop=>{
     const score=calcPropScore(prop);
     return`<div class="prop-card">
 <div class="prop-header" onclick="toggleProperty('${area.id}','${prop.id}')">
@@ -749,37 +698,37 @@ ${prop.open?`<div class="prop-body">
 </div>`;}).join('')}
 </div>`).join('');
 }
-function addArea(){const inp=document.getElementById('new-area-inp');if(!inp.value.trim())return;areas.push({id:uid(),name:inp.value.trim(),properties:[]});inp.value='';save();renderAreas()}
-function delArea(aid){if(!confirm('Delete this area and all its properties?'))return;areas=areas.filter(a=>a.id!==aid);save();renderAreas();renderCalendar()}
-function addProperty(aid){const n=prompt('Property name:');if(!n||!n.trim())return;const a=areas.find(a=>a.id===aid);if(a)a.properties.push({id:uid(),name:n.trim(),open:true,status:'liked',scores:{},address:'',price:'',viewingDate:'',viewingTime:'',viewingNotes:''});save();renderAreas()}
-function toggleProperty(aid,pid){const a=areas.find(a=>a.id===aid);const p=a&&a.properties.find(p=>p.id===pid);if(p)p.open=!p.open;save();renderAreas()}
-function setPropStatus(aid,pid,val){const a=areas.find(a=>a.id===aid);const p=a&&a.properties.find(p=>p.id===pid);if(p)p.status=val;save();renderAreas();renderCalendar()}
-function updateProp(aid,pid,key,val){const a=areas.find(a=>a.id===aid);const p=a&&a.properties.find(p=>p.id===pid);if(p)p[key]=val;save()}
-function setPropScore(aid,pid,key,val){const a=areas.find(a=>a.id===aid);const p=a&&a.properties.find(p=>p.id===pid);if(p){if(!p.scores)p.scores={};const n=Math.min(10,Math.max(1,Number(val)||0));p.scores[key]=n||undefined;save();renderAreas()}}
-function delProperty(aid,pid){const a=areas.find(a=>a.id===aid);if(a)a.properties=a.properties.filter(p=>p.id!==pid);save();renderAreas();renderCalendar()}
+window.addArea = function(){ const inp=document.getElementById('new-area-inp'); if(!inp.value.trim())return; state.areas.push({id:uid(),name:inp.value.trim(),properties:[]}); inp.value=''; saveAll(); renderAreas(); }
+window.delArea = function(aid){ if(!confirm('Delete this area and all its properties?'))return; state.areas=state.areas.filter(a=>a.id!==aid); saveAll(); renderAreas(); renderCalendar(); }
+window.addProperty = function(aid){ const n=prompt('Property name:'); if(!n||!n.trim())return; const a=state.areas.find(a=>a.id===aid); if(a){ if(!a.properties)a.properties=[]; a.properties.push({id:uid(),name:n.trim(),open:true,status:'liked',scores:{},address:'',price:'',viewingDate:'',viewingTime:'',viewingNotes:''}); } saveAll(); renderAreas(); }
+window.toggleProperty = function(aid,pid){ const a=state.areas.find(a=>a.id===aid); const p=a&&(a.properties||[]).find(p=>p.id===pid); if(p)p.open=!p.open; saveAll(); renderAreas(); }
+window.setPropStatus = function(aid,pid,val){ const a=state.areas.find(a=>a.id===aid); const p=a&&(a.properties||[]).find(p=>p.id===pid); if(p)p.status=val; saveAll(); renderAreas(); renderCalendar(); }
+window.updateProp = function(aid,pid,key,val){ const a=state.areas.find(a=>a.id===aid); const p=a&&(a.properties||[]).find(p=>p.id===pid); if(p)p[key]=val; saveAll(); }
+window.setPropScore = function(aid,pid,key,val){ const a=state.areas.find(a=>a.id===aid); const p=a&&(a.properties||[]).find(p=>p.id===pid); if(p){ if(!p.scores)p.scores={}; const n=Math.min(10,Math.max(1,Number(val)||0)); p.scores[key]=n||undefined; saveAll(); renderAreas(); } }
+window.delProperty = function(aid,pid){ const a=state.areas.find(a=>a.id===aid); if(a)a.properties=(a.properties||[]).filter(p=>p.id!==pid); saveAll(); renderAreas(); renderCalendar(); }
 
 // ── CALENDAR ──
-function changeMonth(d){calMonth+=d;if(calMonth>11){calMonth=0;calYear++}if(calMonth<0){calMonth=11;calYear--}save();renderCalendar()}
+window.changeMonth = function(d){ state.calMonth+=d; if(state.calMonth>11){state.calMonth=0;state.calYear++} if(state.calMonth<0){state.calMonth=11;state.calYear--} saveAll(); renderCalendar(); }
 function renderCalendar(){
-  document.getElementById('cal-month-lbl').textContent=MONTHS[calMonth]+' '+calYear;
+  document.getElementById('cal-month-lbl').textContent=MONTHS[state.calMonth]+' '+state.calYear;
   const viewings=getAllViewings();
-  const byDate={};viewings.forEach(v=>{if(v.date){if(!byDate[v.date])byDate[v.date]=[];byDate[v.date].push(v)}});
-  const firstDay=new Date(calYear,calMonth,1);
-  let startDow=firstDay.getDay()-1;if(startDow<0)startDow=6;
-  const dim=new Date(calYear,calMonth+1,0).getDate();
-  const prevDim=new Date(calYear,calMonth,0).getDate();
+  const byDate={};
+  viewings.forEach(v=>{ if(v.date){ if(!byDate[v.date])byDate[v.date]=[]; byDate[v.date].push(v); } });
+  const firstDay=new Date(state.calYear,state.calMonth,1);
+  let startDow=firstDay.getDay()-1; if(startDow<0)startDow=6;
+  const dim=new Date(state.calYear,state.calMonth+1,0).getDate();
+  const prevDim=new Date(state.calYear,state.calMonth,0).getDate();
   const today=new Date();
   const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
   let html=DAYS.map(d=>`<div class="cal-day-hdr">${d}</div>`).join('');
-  for(let i=0;i<startDow;i++)html+=`<div class="cal-day other-m"><div class="cal-day-num">${prevDim-startDow+1+i}</div></div>`;
+  for(let i=0;i<startDow;i++) html+=`<div class="cal-day other-m"><div class="cal-day-num">${prevDim-startDow+1+i}</div></div>`;
   for(let d=1;d<=dim;d++){
-    const ds=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-    const isToday=ds===todayStr;
+    const ds=state.calYear+'-'+String(state.calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
     const evts=byDate[ds]||[];
-    html+=`<div class="cal-day${isToday?' today':''}"><div class="cal-day-num">${d}</div>${evts.map(e=>`<div class="cal-event">${e.time?e.time+' ':''}<b>${e.propName}</b></div>`).join('')}</div>`;
+    html+=`<div class="cal-day${ds===todayStr?' today':''}"><div class="cal-day-num">${d}</div>${evts.map(e=>`<div class="cal-event">${e.time?e.time+' ':''}<b>${e.propName}</b></div>`).join('')}</div>`;
   }
   const total=Math.ceil((startDow+dim)/7)*7;
-  for(let i=1;i<=total-startDow-dim;i++)html+=`<div class="cal-day other-m"><div class="cal-day-num">${i}</div></div>`;
+  for(let i=1;i<=total-startDow-dim;i++) html+=`<div class="cal-day other-m"><div class="cal-day-num">${i}</div></div>`;
   document.getElementById('cal-grid').innerHTML=html;
   const vl=document.getElementById('viewings-list');
   const upcoming=viewings.filter(v=>v.date>=todayStr);
@@ -790,21 +739,81 @@ function renderCalendar(){
 }
 
 // ── NAV ──
-function showTab(name,btn){
+window.showTab = function(name, btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
   btn.classList.add('active');
-  if(name==='budget')renderBudget();
-  if(name==='orders')renderOrders();
-  if(name==='calendar')renderCalendar();
+  if(name==='budget') renderBudget();
+  if(name==='orders') renderOrders();
+  if(name==='calendar') renderCalendar();
 }
 
-// ── INIT ──
-renderShopList();
-renderTasks();
-renderAreas();
-renderCalendar();
+// ── FIREBASE REALTIME LISTENER ──
+const DEFAULT_STATE = {
+  cats:[
+    {id:'c1',name:'Kitchen',items:[
+      {id:'i1',name:'Blender',status:'need',who:'Both',price:'',link:'',orderStatus:'ordered',options:[],criteria:[]},
+      {id:'i2',name:'Toaster',status:'need',who:'Talha',price:'',link:'',orderStatus:'ordered',options:[],criteria:[]},
+    ]},
+    {id:'c2',name:'Bathroom',items:[
+      {id:'i3',name:'Bin',status:'need',who:'Both',price:'',link:'',orderStatus:'ordered',options:[],criteria:[]},
+    ]},
+    {id:'c3',name:'White Goods',items:[
+      {id:'i4',name:'Vacuum cleaner',status:'need',who:'Both',price:'',link:'',orderStatus:'ordered',
+       options:[{id:'o1',name:'Dyson V15 Detect',link:'',open:false,scores:{}},{id:'o2',name:'Shark IZ300UK',link:'',open:false,scores:{}}],
+       criteria:['Suction power','Maneuverability','Aesthetics','Noise level','Price'],
+       weights:[30,20,20,15,15]},
+    ]},
+    {id:'c4',name:'Living Room',items:[
+      {id:'i5',name:'Rug',status:'need',who:'Abdullah',price:'',link:'',orderStatus:'ordered',options:[],criteria:[]},
+    ]},
+  ],
+  activeCat:'c1',
+  tasks:[
+    {id:'t1',text:'Notify change of address',done:false,tag:'admin',who:'Both'},
+    {id:'t2',text:'Set up joint household budget',done:false,tag:'general',who:'Both'},
+    {id:'t3',text:'Book removal van',done:false,tag:'urgent',who:'Talha'},
+    {id:'t4',text:'Sort council tax',done:false,tag:'admin',who:'Abdullah'},
+    {id:'t5',text:'Research internet providers',done:false,tag:'general',who:'Both'},
+  ],
+  areas:[
+    {id:'a1',name:'Southampton',properties:[]},
+    {id:'a2',name:'Winchester',properties:[]},
+  ],
+  calYear:new Date().getFullYear(),
+  calMonth:new Date().getMonth(),
+};
+
+setSyncStatus('syncing','Connecting…');
+document.getElementById('loading-sub').textContent='Connecting to Firebase…';
+
+onValue(ref(db,'planner'), (snapshot)=>{
+  const data = snapshot.val();
+  if(data){
+    state = data;
+    if(!state.cats) state.cats=[];
+    if(!state.tasks) state.tasks=[];
+    if(!state.areas) state.areas=[];
+    if(!state.calYear) state.calYear=new Date().getFullYear();
+    if(!state.calMonth && state.calMonth!==0) state.calMonth=new Date().getMonth();
+  } else {
+    state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    saveAll();
+  }
+  renderShopList();
+  renderTasks();
+  renderAreas();
+  renderCalendar();
+  setSyncStatus('synced','Live');
+  const overlay=document.getElementById('loading-overlay');
+  overlay.classList.add('hidden');
+  setTimeout(()=>overlay.style.display='none', 400);
+}, (error)=>{
+  setSyncStatus('error','Connection error');
+  document.getElementById('loading-sub').textContent='Could not connect. Check your internet connection.';
+});
+
 </script>
 </body>
 </html>

@@ -137,6 +137,9 @@ input::placeholder{color:var(--txf)}
 .loading-title{font-size:18px;font-weight:600;color:#F5F0E8}
 .loading-sub{font-size:13px;color:var(--warm3)}
 @media(max-width:640px){.sidebar{display:none}.main{padding:1rem}}
+.edit-input{background:var(--sur);border:1px solid var(--teal);border-radius:6px;padding:4px 8px;font-size:14px;font-weight:500;color:var(--tx);font-family:inherit;outline:none;min-width:80px}
+.edit-btn{background:none;border:none;cursor:pointer;color:var(--txf);font-size:13px;padding:2px 5px;border-radius:4px;font-family:inherit;line-height:1}
+.edit-btn:hover{color:var(--teal);background:var(--teal-ll)}
 </style>
 </head>
 <body>
@@ -164,7 +167,7 @@ input::placeholder{color:var(--txf)}
       Shopping list
     </button>
     <button class="nav-item" onclick="showTab('budget',this)">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
       Budget
     </button>
     <button class="nav-item" onclick="showTab('orders',this)">
@@ -332,7 +335,19 @@ function renderShopProgress(){
 
 function renderCatTabs(){
   document.getElementById('cat-tabs-bar').innerHTML =
-    state.cats.map(c=>`<button class="cat-tab${c.id===state.activeCat?' active':''}" onclick="setActiveCat('${c.id}')">${c.name}</button>`).join('') +
+    state.cats.map(c=>{
+      if(c.editing){
+        return `<span style="display:inline-flex;align-items:center;gap:4px;margin-bottom:4px">
+          <input class="edit-input" id="cat-edit-${c.id}" value="${c.name}" style="width:110px;font-size:13px" onkeydown="if(event.key==='Enter')saveCatName('${c.id}');if(event.key==='Escape')cancelCatEdit('${c.id}')"/>
+          <button class="edit-btn" onclick="saveCatName('${c.id}')" style="color:var(--teal)">✓</button>
+          <button class="edit-btn" onclick="cancelCatEdit('${c.id}')">✕</button>
+        </span>`;
+      }
+      return `<span style="display:inline-flex;align-items:center;gap:1px">
+        <button class="cat-tab${c.id===state.activeCat?' active':''}" onclick="setActiveCat('${c.id}')">${c.name}</button>
+        <button class="edit-btn" onclick="startCatEdit('${c.id}')" title="Rename" style="margin-bottom:4px;opacity:0.5">✎</button>
+      </span>`;
+    }).join('') +
     `<button class="add-cat-tab" onclick="promptAddCat()">+ Category</button>`;
 }
 
@@ -345,6 +360,18 @@ function renderCatContent(){
   ${(cat.items||[]).map(item=>{
     const wid = calcItemWinner(item);
     const winner = wid ? (item.options||[]).find(o=>o.id===wid) : null;
+    if(item.editing){
+      return `<div class="item-row" style="cursor:default;gap:6px" onclick="event.stopPropagation()">
+  <input class="edit-input" id="item-edit-name-${item.id}" value="${item.name}" placeholder="Item name" style="flex:1"/>
+  <select class="item-status-sel" id="item-edit-who-${item.id}">
+    <option value="Both"${item.who==='Both'?' selected':''}>Both</option>
+    <option value="Talha"${item.who==='Talha'?' selected':''}>Talha</option>
+    <option value="Abdullah"${item.who==='Abdullah'?' selected':''}>Abdullah</option>
+  </select>
+  <button class="btn btn-primary btn-sm" onclick="saveItemEdit('${cat.id}','${item.id}')">Save</button>
+  <button class="btn btn-ghost btn-sm" onclick="cancelItemEdit('${cat.id}','${item.id}')">Cancel</button>
+</div>`;
+    }
     return `<div class="item-row" onclick="openItemDetail('${item.id}')">
   <div style="flex:1;display:flex;align-items:center;gap:8px;min-width:0">
     <span class="item-name-main">${item.name}</span>
@@ -358,6 +385,7 @@ function renderCatContent(){
     <option value="have"${item.status==='have'?' selected':''}>Already have</option>
     <option value="not"${item.status==='not'?' selected':''}>Not required</option>
   </select>
+  <button class="edit-btn" onclick="event.stopPropagation();startItemEdit('${cat.id}','${item.id}')" title="Edit">✎</button>
   <button class="btn-icon" onclick="event.stopPropagation();delShopItem('${cat.id}','${item.id}')">×</button>
 </div>`;}).join('')}
   <div class="add-item-row">
@@ -371,6 +399,9 @@ function renderCatContent(){
 function renderShopList(){ renderShopProgress(); renderCatTabs(); renderCatContent(); }
 
 window.setActiveCat = function(id){ state.activeCat=id; saveAll(); renderShopList(); }
+window.startCatEdit = function(id){ const c=state.cats.find(c=>c.id===id); if(c){c.editing=true; renderCatTabs(); setTimeout(()=>{ const el=document.getElementById('cat-edit-'+id); if(el){el.focus();el.select();} },50); } }
+window.saveCatName = function(id){ const c=state.cats.find(c=>c.id===id); const el=document.getElementById('cat-edit-'+id); if(c&&el&&el.value.trim()){c.name=el.value.trim();} if(c)delete c.editing; saveAll(); renderShopList(); }
+window.cancelCatEdit = function(id){ const c=state.cats.find(c=>c.id===id); if(c)delete c.editing; renderCatTabs(); }
 window.promptAddCat = function(){
   const n = prompt('Category name:');
   if(n&&n.trim()){ const id=uid(); state.cats.push({id,name:n.trim(),items:[]}); state.activeCat=id; saveAll(); renderShopList(); }
@@ -382,6 +413,25 @@ window.setItemStatus = function(iid, val){
 window.delShopItem = function(cid, iid){
   const c = state.cats.find(c=>c.id===cid); if(c) c.items=(c.items||[]).filter(i=>i.id!==iid);
   saveAll(); renderShopList();
+}
+window.startItemEdit = function(cid, iid){
+  const c=state.cats.find(c=>c.id===cid); const i=c&&(c.items||[]).find(i=>i.id===iid);
+  if(i){i.editing=true; renderCatContent(); setTimeout(()=>{ const el=document.getElementById('item-edit-name-'+iid); if(el){el.focus();el.select();} },50); }
+}
+window.saveItemEdit = function(cid, iid){
+  const c=state.cats.find(c=>c.id===cid); const i=c&&(c.items||[]).find(i=>i.id===iid);
+  if(i){
+    const n=document.getElementById('item-edit-name-'+iid); const w=document.getElementById('item-edit-who-'+iid);
+    if(n&&n.value.trim()) i.name=n.value.trim();
+    if(w) i.who=w.value;
+    delete i.editing;
+  }
+  saveAll(); renderShopList();
+}
+window.cancelItemEdit = function(cid, iid){
+  const c=state.cats.find(c=>c.id===cid); const i=c&&(c.items||[]).find(i=>i.id===iid);
+  if(i) delete i.editing;
+  renderCatContent();
 }
 window.addShopItem = function(cid){
   const inp=document.getElementById('new-item-inp'), who=document.getElementById('new-item-who');
@@ -483,7 +533,8 @@ ${(item.criteria||[]).map((c,i)=>`<div style="display:flex;align-items:center;ga
 <div class="option-header" onclick="toggleOption('${item.id}','${o.id}')">
   <div style="flex:1;display:flex;align-items:center;gap:8px">
     ${isW?'<span class="win-badge">🏆 Winner</span>':''}
-    <span class="option-name">${o.name}</span>
+    <span class="option-name" ondblclick="startOptionEdit('${item.id}','${o.id}')" title="Double-click to rename">${o.name}</span>
+    <button class="edit-btn" onclick="event.stopPropagation();startOptionEdit('${item.id}','${o.id}')" title="Rename">✎</button>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     ${s!==null ? `<div class="score-bar-sm"><div class="score-bar-fill" style="width:${pct}%"></div></div><span class="option-score">${s.toFixed(1)}</span>` : `<span class="option-score empty">No scores yet</span>`}
@@ -526,6 +577,11 @@ window.addOption = function(iid){
 window.delOption = function(iid, oid){ const r=getItem(iid); if(r)r.item.options=(r.item.options||[]).filter(o=>o.id!==oid); saveAll(); renderItemDetail(); }
 window.toggleOption = function(iid, oid){ const r=getItem(iid); const o=r&&(r.item.options||[]).find(o=>o.id===oid); if(o)o.open=!o.open; saveAll(); renderItemDetail(); }
 window.updateOptionField = function(iid, oid, key, val){ const r=getItem(iid); const o=r&&(r.item.options||[]).find(o=>o.id===oid); if(o)o[key]=val; saveAll(); }
+window.startOptionEdit = function(iid, oid){
+  const n=prompt('Rename option:'); if(!n||!n.trim()) return;
+  const r=getItem(iid); const o=r&&(r.item.options||[]).find(o=>o.id===oid);
+  if(o){o.name=n.trim(); saveAll(); renderItemDetail();}
+}
 window.setOptionScore = function(iid, oid, key, val){
   const r=getItem(iid); const o=r&&(r.item.options||[]).find(o=>o.id===oid);
   if(o){ if(!o.scores)o.scores={}; const n=Math.min(10,Math.max(1,Number(val)||0)); o.scores[key]=n||undefined; saveAll(); renderItemDetail(); }
@@ -600,10 +656,17 @@ function renderTasks(){
     cats.map(cat=>{ const ct=todo.filter(t=>t.tag===cat.k); if(!ct.length)return'';
       return`<div class="card card-pad" style="margin-bottom:10px">
 <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--txf);margin-bottom:10px">${cat.l}</div>
-${ct.map(t=>`<div class="order-row">
+${ct.map(t=>t.editing ? `<div class="order-row" style="flex-wrap:wrap;gap:6px">
+  <input class="edit-input" id="task-edit-${t.id}" value="${t.text}" style="flex:1;min-width:140px"/>
+  <select class="item-status-sel" id="task-edit-who-${t.id}"><option value="Both"${t.who==='Both'?' selected':''}>Both</option><option value="Talha"${t.who==='Talha'?' selected':''}>Talha</option><option value="Abdullah"${t.who==='Abdullah'?' selected':''}>Abdullah</option></select>
+  <select class="item-status-sel" id="task-edit-tag-${t.id}"><option value="general"${t.tag==='general'?' selected':''}>General</option><option value="urgent"${t.tag==='urgent'?' selected':''}>Urgent</option><option value="admin"${t.tag==='admin'?' selected':''}>Admin</option></select>
+  <button class="btn btn-primary btn-sm" onclick="saveTaskEdit('${t.id}')">Save</button>
+  <button class="btn btn-ghost btn-sm" onclick="cancelTaskEdit('${t.id}')">Cancel</button>
+</div>` : `<div class="order-row">
   <input type="checkbox" style="width:16px;height:16px;accent-color:var(--teal);flex-shrink:0;cursor:pointer" onchange="toggleTask('${t.id}')"/>
   <span style="flex:1;font-size:14px">${t.text}</span>
   ${avHtml(t.who,22)}<span style="font-size:12px;color:var(--txm)">${t.who}</span>
+  <button class="edit-btn" onclick="startTaskEdit('${t.id}')" title="Edit">✎</button>
   <button class="btn-icon" onclick="delTask('${t.id}')">×</button>
 </div>`).join('')}</div>`;}).join('')+
     (done.length?`<div class="card card-pad" style="margin-bottom:10px">
@@ -616,6 +679,21 @@ ${done.map(t=>`<div class="order-row" style="opacity:0.5">
 }
 window.toggleTask = function(id){ const t=state.tasks.find(t=>t.id===id); if(t)t.done=!t.done; saveAll(); renderTasks(); }
 window.delTask = function(id){ state.tasks=state.tasks.filter(t=>t.id!==id); saveAll(); renderTasks(); }
+window.startTaskEdit = function(id){
+  const t=state.tasks.find(t=>t.id===id); if(t){t.editing=true; renderTasks(); setTimeout(()=>{ const el=document.getElementById('task-edit-'+id); if(el){el.focus();el.select();} },50); }
+}
+window.saveTaskEdit = function(id){
+  const t=state.tasks.find(t=>t.id===id);
+  if(t){
+    const n=document.getElementById('task-edit-'+id); const w=document.getElementById('task-edit-who-'+id); const tg=document.getElementById('task-edit-tag-'+id);
+    if(n&&n.value.trim()) t.text=n.value.trim();
+    if(w) t.who=w.value;
+    if(tg) t.tag=tg.value;
+    delete t.editing;
+  }
+  saveAll(); renderTasks();
+}
+window.cancelTaskEdit = function(id){ const t=state.tasks.find(t=>t.id===id); if(t)delete t.editing; renderTasks(); }
 window.addTask = function(){
   const inp=document.getElementById('new-task'), tag=document.getElementById('task-tag'), who=document.getElementById('task-who');
   if(!inp.value.trim()) return;
@@ -643,7 +721,8 @@ function renderAreas(){
   <div class="area-hdr">
     <div class="area-title">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      ${area.name}<span class="area-count">${(area.properties||[]).length} propert${(area.properties||[]).length!==1?'ies':'y'}</span>
+      ${area.editing ? `<input class="edit-input" id="area-edit-${area.id}" value="${area.name}" style="width:130px;font-size:14px" onkeydown="if(event.key==='Enter')saveAreaName('${area.id}');if(event.key==='Escape')cancelAreaEdit('${area.id}')"/><button class="edit-btn" onclick="saveAreaName('${area.id}')" style="color:var(--teal)">✓</button><button class="edit-btn" onclick="cancelAreaEdit('${area.id}')">✕</button>` : `${area.name}<button class="edit-btn" onclick="startAreaEdit('${area.id}')" title="Rename" style="opacity:0.6">✎</button>`}
+      <span class="area-count">${(area.properties||[]).length} propert${(area.properties||[]).length!==1?'ies':'y'}</span>
     </div>
     <div class="area-actions">
       <button class="btn btn-ghost btn-sm" onclick="addProperty('${area.id}')">+ Property</button>
@@ -655,7 +734,7 @@ function renderAreas(){
     const score=calcPropScore(prop);
     return`<div class="prop-card">
 <div class="prop-header" onclick="toggleProperty('${area.id}','${prop.id}')">
-  <span class="prop-name">${prop.name}</span>
+  ${prop.editingName ? `<input class="edit-input" id="prop-edit-${prop.id}" value="${prop.name}" style="flex:1" onkeydown="if(event.key==='Enter')savePropName('${area.id}','${prop.id}');if(event.key==='Escape')cancelPropEdit('${area.id}','${prop.id}')"/><button class="edit-btn" onclick="savePropName('${area.id}','${prop.id}')" style="color:var(--teal)">✓</button><button class="edit-btn" onclick="cancelPropEdit('${area.id}','${prop.id}')">✕</button>` : `<span class="prop-name">${prop.name}</span><button class="edit-btn" onclick="event.stopPropagation();startPropEdit('${area.id}','${prop.id}')" title="Rename">✎</button>`}
   ${score!==null?`<span class="prop-score-badge">${score.toFixed(1)}/10</span>`:''}
   <select class="prop-status-sel" onclick="event.stopPropagation()" onchange="setPropStatus('${area.id}','${prop.id}',this.value)">
     <option value="liked"${(prop.status||'liked')==='liked'?' selected':''}>Liked</option>
@@ -706,6 +785,12 @@ window.setPropStatus = function(aid,pid,val){ const a=state.areas.find(a=>a.id==
 window.updateProp = function(aid,pid,key,val){ const a=state.areas.find(a=>a.id===aid); const p=a&&(a.properties||[]).find(p=>p.id===pid); if(p)p[key]=val; saveAll(); }
 window.setPropScore = function(aid,pid,key,val){ const a=state.areas.find(a=>a.id===aid); const p=a&&(a.properties||[]).find(p=>p.id===pid); if(p){ if(!p.scores)p.scores={}; const n=Math.min(10,Math.max(1,Number(val)||0)); p.scores[key]=n||undefined; saveAll(); renderAreas(); } }
 window.delProperty = function(aid,pid){ const a=state.areas.find(a=>a.id===aid); if(a)a.properties=(a.properties||[]).filter(p=>p.id!==pid); saveAll(); renderAreas(); renderCalendar(); }
+window.startAreaEdit = function(aid){ const a=state.areas.find(a=>a.id===aid); if(a){a.editing=true; renderAreas(); setTimeout(()=>{ const el=document.getElementById('area-edit-'+aid); if(el){el.focus();el.select();} },50); } }
+window.saveAreaName = function(aid){ const a=state.areas.find(a=>a.id===aid); const el=document.getElementById('area-edit-'+aid); if(a&&el&&el.value.trim())a.name=el.value.trim(); if(a)delete a.editing; saveAll(); renderAreas(); }
+window.cancelAreaEdit = function(aid){ const a=state.areas.find(a=>a.id===aid); if(a)delete a.editing; renderAreas(); }
+window.startPropEdit = function(aid,pid){ const a=state.areas.find(a=>a.id===aid); const p=a&&(a.properties||[]).find(p=>p.id===pid); if(p){p.editingName=true; renderAreas(); setTimeout(()=>{ const el=document.getElementById('prop-edit-'+pid); if(el){el.focus();el.select();} },50); } }
+window.savePropName = function(aid,pid){ const a=state.areas.find(a=>a.id===aid); const p=a&&(a.properties||[]).find(p=>p.id===pid); const el=document.getElementById('prop-edit-'+pid); if(p&&el&&el.value.trim())p.name=el.value.trim(); if(p)delete p.editingName; saveAll(); renderAreas(); }
+window.cancelPropEdit = function(aid,pid){ const a=state.areas.find(a=>a.id===aid); const p=a&&(a.properties||[]).find(p=>p.id===pid); if(p)delete p.editingName; renderAreas(); }
 
 // ── CALENDAR ──
 window.changeMonth = function(d){ state.calMonth+=d; if(state.calMonth>11){state.calMonth=0;state.calYear++} if(state.calMonth<0){state.calMonth=11;state.calYear--} saveAll(); renderCalendar(); }

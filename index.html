@@ -307,62 +307,21 @@ input::placeholder{color:var(--txf)}
   </main>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-// Firebase REST API — no SDK, just plain fetch()
-const FB_URL = 'https://moving-planner-39bd8-default-rtdb.europe-west1.firebasedatabase.app/planner.json';
-let lastSaveData = null;
-let saveTimer = null;
-let pollTimer = null;
+const firebaseConfig = {
+  apiKey: "AIzaSyAgeXcn_f9YkI7XvKsTWGXpnsEfDWPhlfY",
+  authDomain: "moving-planner-39bd8.firebaseapp.com",
+  databaseURL: "https://moving-planner-39bd8-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "moving-planner-39bd8",
+  storageBucket: "moving-planner-39bd8.firebasestorage.app",
+  messagingSenderId: "226454824568",
+  appId: "1:226454824568:web:1a577c10fd9c7ff89c6f8d"
+};
 
-async function fbGet(){
-  try {
-    const r = await fetch(FB_URL);
-    if(!r.ok) return null;
-    return await r.json();
-  } catch(e){ return null; }
-}
-
-async function fbSave(data){
-  try {
-    const r = await fetch(FB_URL, {
-      method: 'PUT',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(data)
-    });
-    if(r.ok){
-      setSyncStatus('synced','Live ✓');
-      lastSaveData = JSON.stringify(data);
-    } else {
-      setSyncStatus('error','Sync error '+r.status);
-    }
-  } catch(e){
-    setSyncStatus('error','Sync error');
-  }
-}
-
-function scheduleSync(){
-  setSyncStatus('syncing','Saving…');
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>{
-    const data = {cats:state.cats,activeCat:state.activeCat,tasks:state.tasks,areas:state.areas,calYear:state.calYear,calMonth:state.calMonth};
-    fbSave(data);
-  }, 800);
-}
-
-// Poll for changes from Abdullah every 8 seconds
-function startPolling(){
-  clearInterval(pollTimer);
-  pollTimer = setInterval(async ()=>{
-    const data = await fbGet();
-    if(data){
-      const incoming = JSON.stringify(data);
-      if(incoming !== lastSaveData){
-        lastSaveData = incoming;
-        applyState(data);
-      }
-    }
-  }, 8000);
-}
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 const HOUSE_CRIT=['Location','Price','Size','Natural light','Outdoor space','Condition','Neighbourhood feel','Commute','Noise','Amenities nearby'];
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -389,8 +348,21 @@ function setSyncStatus(status, text){
 }
 
 // ── FIREBASE SAVE ──
+function saveToFirebase(path, data){
+  setSyncStatus('syncing','Saving…');
+  db.ref(path).set(data)
+    .then(()=>setSyncStatus('synced','Live ✓'))
+    .catch(()=>setSyncStatus('error','Sync error'));
+}
 function saveAll(){
-  scheduleSync();
+  saveToFirebase('planner', {
+    cats: state.cats,
+    activeCat: state.activeCat,
+    tasks: state.tasks,
+    areas: state.areas,
+    calYear: state.calYear,
+    calMonth: state.calMonth,
+  });
 }
 
 // ── HELPERS ──

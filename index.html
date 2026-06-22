@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Talha and Abdullah Move in Together</title>
 <style>
@@ -310,6 +313,7 @@ input::placeholder{color:var(--txf)}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
+/* v9-fixed */
 const firebaseConfig = {
   apiKey: "AIzaSyAgeXcn_f9YkI7XvKsTWGXpnsEfDWPhlfY",
   authDomain: "moving-planner-39bd8.firebaseapp.com",
@@ -320,7 +324,7 @@ const firebaseConfig = {
   appId: "1:226454824568:web:1a577c10fd9c7ff89c6f8d"
 };
 
-firebase.initializeApp(firebaseConfig);
+if(!firebase.apps.length){ firebase.initializeApp(firebaseConfig); }
 const db = firebase.database();
 
 const HOUSE_CRIT=['Location','Price','Size','Natural light','Outdoor space','Condition','Neighbourhood feel','Commute','Noise','Amenities nearby'];

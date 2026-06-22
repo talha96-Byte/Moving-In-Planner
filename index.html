@@ -307,10 +307,9 @@ input::placeholder{color:var(--txf)}
   </main>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
 const firebaseConfig = {
   apiKey: "AIzaSyAgeXcn_f9YkI7XvKsTWGXpnsEfDWPhlfY",
   authDomain: "moving-planner-39bd8.firebaseapp.com",
@@ -321,8 +320,8 @@ const firebaseConfig = {
   appId: "1:226454824568:web:1a577c10fd9c7ff89c6f8d"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 const HOUSE_CRIT=['Location','Price','Size','Natural light','Outdoor space','Condition','Neighbourhood feel','Commute','Noise','Amenities nearby'];
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -351,8 +350,8 @@ function setSyncStatus(status, text){
 // ── FIREBASE SAVE ──
 function saveToFirebase(path, data){
   setSyncStatus('syncing','Saving…');
-  set(ref(db, path), data)
-    .then(()=>setSyncStatus('synced','Synced'))
+  db.ref(path).set(data)
+    .then(()=>setSyncStatus('synced','Live ✓'))
     .catch(()=>setSyncStatus('error','Sync error'));
 }
 function saveAll(){
@@ -980,7 +979,7 @@ const DEFAULT_STATE = {
 setSyncStatus('syncing','Connecting…');
 document.getElementById('loading-sub').textContent='Connecting to Firebase…';
 
-onValue(ref(db,'planner'), (snapshot)=>{
+db.ref('planner').on('value', (snapshot)=>{
   const data = snapshot.val();
   if(data){
     state = data;

@@ -307,21 +307,74 @@ input::placeholder{color:var(--txf)}
   </main>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAgeXcn_f9YkI7XvKsTWGXpnsEfDWPhlfY",
-  authDomain: "moving-planner-39bd8.firebaseapp.com",
-  databaseURL: "https://moving-planner-39bd8-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "moving-planner-39bd8",
-  storageBucket: "moving-planner-39bd8.firebasestorage.app",
-  messagingSenderId: "226454824568",
-  appId: "1:226454824568:web:1a577c10fd9c7ff89c6f8d"
-};
+const JSONBIN_KEY = '$2a$10$hyNVxmoCtM1GooiEsmZDx.Zj5y0EdjWhF5ECHqFkM2B6/WmYp8AG.';
+const JSONBIN_BIN_KEY = 'moving-planner-bin-id';
+let BIN_ID = localStorage.getItem(JSONBIN_BIN_KEY) || null;
+let lastSaveData = null;
+let saveTimer = null;
+let pollTimer = null;
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+async function jsonbinGet(){
+  if(!BIN_ID) return null;
+  try {
+    const r = await fetch('https://api.jsonbin.io/v3/b/'+BIN_ID+'/latest', {
+      headers:{'X-Master-Key': JSONBIN_KEY}
+    });
+    if(!r.ok) return null;
+    const j = await r.json();
+    return j.record;
+  } catch(e){ return null; }
+}
+
+async function jsonbinCreate(data){
+  try {
+    const r = await fetch('https://api.jsonbin.io/v3/b', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY,'X-Bin-Name':'moving-planner'},
+      body: JSON.stringify(data)
+    });
+    if(!r.ok) return null;
+    const j = await r.json();
+    return j.metadata.id;
+  } catch(e){ return null; }
+}
+
+async function jsonbinSave(data){
+  if(!BIN_ID) return;
+  try {
+    await fetch('https://api.jsonbin.io/v3/b/'+BIN_ID, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},
+      body: JSON.stringify(data)
+    });
+    setSyncStatus('synced','Live ✓');
+  } catch(e){ setSyncStatus('error','Sync error'); }
+}
+
+function scheduleSync(){
+  setSyncStatus('syncing','Saving…');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    const data = {cats:state.cats,activeCat:state.activeCat,tasks:state.tasks,areas:state.areas,calYear:state.calYear,calMonth:state.calMonth};
+    jsonbinSave(data);
+  }, 800);
+}
+
+// Poll for changes from Abdullah every 10 seconds
+function startPolling(){
+  clearInterval(pollTimer);
+  pollTimer = setInterval(async ()=>{
+    const data = await jsonbinGet();
+    if(data){
+      const incoming = JSON.stringify(data);
+      if(incoming !== lastSaveData){
+        lastSaveData = incoming;
+        applyState(data);
+      }
+    }
+  }, 10000);
+}
 
 const HOUSE_CRIT=['Location','Price','Size','Natural light','Outdoor space','Condition','Neighbourhood feel','Commute','Noise','Amenities nearby'];
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -348,21 +401,8 @@ function setSyncStatus(status, text){
 }
 
 // ── FIREBASE SAVE ──
-function saveToFirebase(path, data){
-  setSyncStatus('syncing','Saving…');
-  db.ref(path).set(data)
-    .then(()=>setSyncStatus('synced','Live ✓'))
-    .catch(()=>setSyncStatus('error','Sync error'));
-}
 function saveAll(){
-  saveToFirebase('planner', {
-    cats: state.cats,
-    activeCat: state.activeCat,
-    tasks: state.tasks,
-    areas: state.areas,
-    calYear: state.calYear,
-    calMonth: state.calMonth,
-  });
+  scheduleSync();
 }
 
 // ── HELPERS ──
@@ -1002,8 +1042,22 @@ db.ref('planner').on('value', (snapshot)=>{
   setTimeout(()=>overlay.style.display='none', 400);
 }, (error)=>{
   setSyncStatus('error','Connection error');
-  document.getElementById('loading-sub').textContent='Could not connect. Check your internet connection.';
+  document.getElementById('loading-sub').textContent='Connection failed';
+  const errDiv = document.getElementById('loading-error');
+  errDiv.style.display='block';
+  errDiv.textContent = 'Error: ' + (error.message||error.code||JSON.stringify(error));
 });
+
+// Timeout fallback — if still on loading screen after 8s, show error details
+setTimeout(()=>{
+  const overlay = document.getElementById('loading-overlay');
+  if(!overlay.classList.contains('hidden')){
+    document.getElementById('loading-sub').textContent = 'Taking too long…';
+    const errDiv = document.getElementById('loading-error');
+    errDiv.style.display='block';
+    errDiv.innerHTML = 'Check browser console for errors.<br>Try opening browser DevTools (F12) → Console tab and send the error to Claude.';
+  }
+}, 8000);
 
 </script>
 </body>

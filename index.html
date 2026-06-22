@@ -136,7 +136,32 @@ input::placeholder{color:var(--txf)}
 .loading-logo{width:56px;height:56px;background:var(--teal);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px}
 .loading-title{font-size:18px;font-weight:600;color:#F5F0E8}
 .loading-sub{font-size:13px;color:var(--warm3)}
-@media(max-width:640px){.sidebar{display:none}.main{padding:1rem}}
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{padding:1rem}
+  .layout{flex-direction:column}
+  .prop-crit-grid{grid-template-columns:1fr}
+  .budget-summary{grid-template-columns:1fr 1fr}
+  .option-header{flex-wrap:wrap}
+  .score-pair{flex-wrap:wrap}
+  .add-item-row{flex-direction:column}
+  .add-item-row input,.add-item-row select,.add-item-row button{width:100%}
+  .prop-meta{flex-direction:column}
+  .prop-meta input{width:100%}
+}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--warm);border-top:1px solid rgba(255,255,255,0.1);z-index:200;padding:6px 0 max(6px,env(safe-area-inset-bottom))}
+.bottom-nav-inner{display:flex;justify-content:space-around;align-items:center}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 8px;cursor:pointer;color:rgba(255,255,255,0.5);border:none;background:none;font-family:inherit;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;min-width:44px;transition:color 0.15s}
+.bnav-item.active{color:#9FE1CB}
+.bnav-item svg{width:20px;height:20px}
+.bnav-more-panel{display:none;position:fixed;bottom:60px;left:0;right:0;background:var(--warm);border-top:1px solid rgba(255,255,255,0.15);z-index:199;padding:12px}
+.bnav-more-panel.open{display:block}
+.bnav-more-item{display:flex;align-items:center;gap:10px;padding:10px 12px;color:rgba(255,255,255,0.8);cursor:pointer;border:none;background:none;font-family:inherit;font-size:14px;width:100%;border-radius:8px}
+.bnav-more-item:hover,.bnav-more-item.active{background:rgba(255,255,255,0.1);color:white}
+@media(max-width:768px){
+  .bottom-nav{display:block}
+  .main{padding:1rem 1rem 80px}
+}
 .edit-input{background:var(--sur);border:1px solid var(--teal);border-radius:6px;padding:4px 8px;font-size:14px;font-weight:500;color:var(--tx);font-family:inherit;outline:none;min-width:80px}
 .edit-btn{background:none;border:none;cursor:pointer;color:var(--txf);font-size:13px;padding:2px 5px;border-radius:4px;font-family:inherit;line-height:1}
 .edit-btn:hover{color:var(--teal);background:var(--teal-ll)}
@@ -188,6 +213,42 @@ input::placeholder{color:var(--txf)}
       Viewings calendar
     </button>
   </nav>
+
+  <!-- BOTTOM NAV (mobile) -->
+  <div class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button class="bnav-item active" id="bnav-shopping" onclick="showTabMobile('shopping',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        Shopping
+      </button>
+      <button class="bnav-item" id="bnav-budget" onclick="showTabMobile('budget',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        Budget
+      </button>
+      <button class="bnav-item" id="bnav-tasks" onclick="showTabMobile('tasks',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Tasks
+      </button>
+      <button class="bnav-item" id="bnav-houses" onclick="showTabMobile('houses',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Houses
+      </button>
+      <button class="bnav-item" id="bnav-more" onclick="toggleMorePanel(this)">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        More
+      </button>
+    </div>
+  </div>
+  <div class="bnav-more-panel" id="bnav-more-panel">
+    <button class="bnav-more-item" id="bnav-more-orders" onclick="showTabMobile('orders',document.getElementById('bnav-more'));toggleMorePanel()">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      Order tracker
+    </button>
+    <button class="bnav-more-item" id="bnav-more-calendar" onclick="showTabMobile('calendar',document.getElementById('bnav-more'));toggleMorePanel()">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Viewings calendar
+    </button>
+  </div>
 
   <main class="main">
     <div id="panel-shopping" class="panel active">
@@ -377,6 +438,7 @@ function renderCatContent(){
     <span class="item-name-main">${item.name}</span>
     ${winner ? `<span class="item-winner-tag">→ ${winner.name}</span>` : ''}
     ${item.options&&item.options.length ? `<span style="font-size:11px;color:var(--txf)">${item.options.length} option${item.options.length!==1?'s':''}</span>` : ''}
+    ${item.budget ? `<span style="font-size:11px;font-weight:500;color:var(--txm);background:var(--sand2);padding:1px 6px;border-radius:10px">£${Number(item.budget).toLocaleString('en-GB',{minimumFractionDigits:0,maximumFractionDigits:2})}</span>` : ''}
   </div>
   ${avHtml(item.who)}
   <select class="item-status-sel" onclick="event.stopPropagation()" onchange="setItemStatus('${item.id}',this.value)">
@@ -486,7 +548,7 @@ function renderItemDetail(){
   <div class="page-sub" style="display:flex;align-items:center;gap:6px">${cat.name} · ${avHtml(item.who,18)} <span style="font-size:13px;color:var(--txm)">${item.who}</span></div>
 </div>
 <div class="card card-pad" style="margin-bottom:1rem">
-  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
     <div style="font-size:13px;color:var(--txm);font-weight:500">Status</div>
     <select class="item-status-sel" onchange="setItemStatus('${item.id}',this.value);renderItemDetail()">
       <option value="need"${item.status==='need'?' selected':''}>Need to purchase</option>
@@ -494,8 +556,23 @@ function renderItemDetail(){
       <option value="have"${item.status==='have'?' selected':''}>Already have</option>
       <option value="not"${item.status==='not'?' selected':''}>Not required</option>
     </select>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding-top:10px;border-top:1px solid var(--bdr)">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:13px;color:var(--txm);font-weight:500;white-space:nowrap">Budget</span>
+      <div style="position:relative;display:flex;align-items:center">
+        <span style="position:absolute;left:9px;font-size:13px;color:var(--txm)">£</span>
+        <input type="number" placeholder="0.00" value="${item.budget||''}" style="width:110px;padding-left:22px" onchange="updateItemField('${item.id}','budget',this.value)" min="0" step="0.01"/>
+      </div>
+    </div>
     ${item.status==='ordered' ? `
-    <input type="number" placeholder="Price (£)" value="${item.price||''}" style="width:120px" onchange="updateItemField('${item.id}','price',this.value)" min="0" step="0.01"/>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:13px;color:var(--txm);font-weight:500;white-space:nowrap">Paid</span>
+      <div style="position:relative;display:flex;align-items:center">
+        <span style="position:absolute;left:9px;font-size:13px;color:var(--txm)">£</span>
+        <input type="number" placeholder="0.00" value="${item.price||''}" style="width:110px;padding-left:22px" onchange="updateItemField('${item.id}','price',this.value)" min="0" step="0.01"/>
+      </div>
+    </div>
     <input type="url" placeholder="Link to purchase…" value="${item.link||''}" style="flex:1;min-width:180px" onchange="updateItemField('${item.id}','link',this.value)"/>
     ${item.link ? `<a href="${item.link}" target="_blank" class="link-open">↗ Open</a>` : ''}` : ''}
   </div>
@@ -611,22 +688,35 @@ window.updateCritWeight = function(iid, idx, val){
 
 // ── BUDGET ──
 function renderBudget(){
+  const allItems=[];
   const ordered=[];
-  state.cats.forEach(cat=>{ (cat.items||[]).forEach(item=>{ if(item.status==='ordered'&&item.price) ordered.push({cat:cat.name,name:item.name,price:Number(item.price)||0,link:item.link||''}); }); });
-  const total=ordered.reduce((s,i)=>s+i.price,0);
+  state.cats.forEach(cat=>{ (cat.items||[]).forEach(item=>{
+    if(item.budget) allItems.push({cat:cat.name,name:item.name,budget:Number(item.budget)||0,price:Number(item.price)||0,status:item.status,link:item.link||''});
+    if(item.status==='ordered'&&item.price) ordered.push({cat:cat.name,name:item.name,price:Number(item.price)||0,link:item.link||''});
+  }); });
+  const totalBudget=allItems.reduce((s,i)=>s+i.budget,0);
+  const totalSpent=ordered.reduce((s,i)=>s+i.price,0);
+  const diff=totalBudget-totalSpent;
   const byCat={};
-  ordered.forEach(i=>{ if(!byCat[i.cat])byCat[i.cat]=0; byCat[i.cat]+=i.price; });
+  allItems.forEach(i=>{ if(!byCat[i.cat])byCat[i.cat]={budget:0,spent:0,items:[]}; byCat[i.cat].budget+=i.budget; if(i.status==='ordered')byCat[i.cat].spent+=i.price; byCat[i.cat].items.push(i); });
+
   document.getElementById('budget-summary').innerHTML=`
-<div class="budget-card"><div class="budget-card-label">Total spent</div><div class="budget-card-value teal">${fmt(total)||'£0.00'}</div></div>
-<div class="budget-card"><div class="budget-card-label">Items ordered</div><div class="budget-card-value">${ordered.length}</div></div>
-<div class="budget-card"><div class="budget-card-label">Categories</div><div class="budget-card-value">${Object.keys(byCat).length}</div></div>`;
-  if(!ordered.length){ document.getElementById('budget-table').innerHTML=`<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--txf)">No ordered items with prices yet</td></tr>`; return; }
-  let rows=`<thead><tr><th>Item</th><th>Category</th><th>Link</th><th style="text-align:right">Price</th></tr></thead><tbody>`;
+<div class="budget-card"><div class="budget-card-label">Total budget allocated</div><div class="budget-card-value">${fmt(totalBudget)||'£0.00'}</div></div>
+<div class="budget-card"><div class="budget-card-label">Total spent</div><div class="budget-card-value teal">${fmt(totalSpent)||'£0.00'}</div></div>
+<div class="budget-card"><div class="budget-card-label">${diff>=0?'Remaining':'Over budget'}</div><div class="budget-card-value" style="color:${diff>=0?'var(--teal)':'var(--coral)'}">${fmt(Math.abs(diff))||'£0.00'}</div></div>
+<div class="budget-card"><div class="budget-card-label">Items ordered</div><div class="budget-card-value">${ordered.length}</div></div>`;
+
+  if(!Object.keys(byCat).length){ document.getElementById('budget-table').innerHTML=`<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--txf)">Set budgets on items in the shopping list to see them here</td></tr>`; return; }
+  let rows=`<thead><tr><th>Item</th><th>Category</th><th>Link</th><th style="text-align:right">Budget</th><th style="text-align:right">Spent</th></tr></thead><tbody>`;
   Object.keys(byCat).forEach(catName=>{
-    rows+=`<tr class="budget-cat-header"><td colspan="3">${catName}</td><td style="text-align:right;font-weight:700">${fmt(byCat[catName])}</td></tr>`;
-    ordered.filter(i=>i.cat===catName).forEach(i=>{ rows+=`<tr><td>${i.name}</td><td><span style="font-size:11px;color:var(--txm)">${i.cat}</span></td><td>${i.link?`<a href="${i.link}" target="_blank" class="order-link" style="font-size:11px">↗ Link</a>`:''}</td><td style="text-align:right;font-weight:600;color:var(--teal)">${fmt(i.price)}</td></tr>`; });
+    const cd=byCat[catName];
+    rows+=`<tr class="budget-cat-header"><td colspan="3">${catName}</td><td style="text-align:right;font-weight:700">${fmt(cd.budget)||'—'}</td><td style="text-align:right;font-weight:700;color:var(--teal)">${fmt(cd.spent)||'—'}</td></tr>`;
+    cd.items.forEach(i=>{
+      const over=i.status==='ordered'&&i.price>i.budget&&i.budget>0;
+      rows+=`<tr><td>${i.name}</td><td><span style="font-size:11px;color:var(--txm)">${i.cat}</span></td><td>${i.link?`<a href="${i.link}" target="_blank" class="order-link" style="font-size:11px">↗ Link</a>`:''}</td><td style="text-align:right;color:var(--txm)">${fmt(i.budget)||'—'}</td><td style="text-align:right;font-weight:600;color:${over?'var(--coral)':'var(--teal)'}">${i.status==='ordered'&&i.price?fmt(i.price):'—'}</td></tr>`;
+    });
   });
-  rows+=`<tr><td colspan="3" style="font-weight:700;font-size:14px">Total</td><td style="text-align:right;font-weight:700;font-size:16px;color:var(--teal)">${fmt(total)}</td></tr></tbody>`;
+  rows+=`<tr style="border-top:2px solid var(--bdr2)"><td colspan="3" style="font-weight:700;font-size:14px">Total</td><td style="text-align:right;font-weight:700;font-size:15px">${fmt(totalBudget)}</td><td style="text-align:right;font-weight:700;font-size:15px;color:var(--teal)">${fmt(totalSpent)}</td></tr></tbody>`;
   document.getElementById('budget-table').innerHTML=rows;
 }
 
@@ -832,6 +922,23 @@ window.showTab = function(name, btn){
   if(name==='budget') renderBudget();
   if(name==='orders') renderOrders();
   if(name==='calendar') renderCalendar();
+}
+window.showTabMobile = function(name, btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  const sideBtn=document.querySelector('.nav-item[onclick*="''+name+''"]');
+  if(sideBtn) sideBtn.classList.add('active');
+  if(name==='budget') renderBudget();
+  if(name==='orders') renderOrders();
+  if(name==='calendar') renderCalendar();
+  document.getElementById('bnav-more-panel').classList.remove('open');
+}
+window.toggleMorePanel = function(btn){
+  const panel=document.getElementById('bnav-more-panel');
+  panel.classList.toggle('open');
 }
 
 // ── FIREBASE REALTIME LISTENER ──
